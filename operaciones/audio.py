@@ -41,7 +41,8 @@ class insertaraudio(bpy.types.Operator):
             MostarMensajeBox("Pista No asignada en: data/blender.json",
                              title="Error", icon="ERROR")
             return{'FINISHED'}
-
+            
+        # TODO: Buscar inicio y fin de selecion de clips en ves de solo el primero
         if len(context.selected_sequences) > 0:
             Inicio = context.selected_sequences[0].frame_final_start
             Final = context.selected_sequences[0].frame_final_end
@@ -64,33 +65,3 @@ class insertaraudio(bpy.types.Operator):
                              title="Error", icon="ERROR")
         SalvarValor("data/blender.json", "clip", None)
         return{'FINISHED'}
-
-
-addon_keymaps = []
-
-
-def add_hotkey_audio():
-    wm = bpy.context.window_manager
-    kc = wm.keyconfigs.addon
-
-    km = kc.keymaps.new(name='Sequencer', space_type='SEQUENCE_EDITOR')
-
-    kmi = km.keymap_items.new("scene.insertaraudio",
-                              'O', 'PRESS', ctrl=True, shift=True)
-    kmi.properties.macros = True
-
-    addon_keymaps.append((km, kmi))
-
-
-def remove_hotkey_audio():
-    for km, kmi in addon_keymaps:
-        km.keymap_items.remove(kmi)
-    addon_keymaps.clear()
-
-
-def register():
-    bpy.utils.register_class(insertaraudio)
-
-
-def unregister():
-    bpy.utils.unregister_class(insertaraudio)

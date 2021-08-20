@@ -1,4 +1,10 @@
 import bpy
+from . import mipanel
+from .operaciones.alinear import superaliniar
+from .operaciones.audio import insertaraudio
+from .operaciones.zoon import superzoon
+from .operaciones.clip import insertarsonido
+from .operaciones.macros import add_hotkey, remove_hotkey
 
 bl_info = {
     "name": "ALSW_Plugin_Blender",
@@ -12,22 +18,22 @@ bl_info = {
     "category": "Sequencer",
 }
 
-from .operaciones.audio import insertaraudio, add_hotkey_audio, remove_hotkey_audio
-
-from . import mipanel
-
 classes = [
     insertaraudio,
+    superaliniar,
+    superzoon,
+    insertarsonido,
     mipanel.mipanel
 ]
+
 
 def register():
     for cls in classes:
         bpy.utils.register_class(cls)
-    add_hotkey_audio()
+    add_hotkey()
 
 
 def unregister():
     for cls in classes:
         bpy.utils.unregister_class(cls)
-    remove_hotkey_audio()
+    remove_hotkey()

@@ -41,11 +41,17 @@ class insertaraudio(bpy.types.Operator):
             MostarMensajeBox("Pista No asignada en: data/blender.json",
                              title="Error", icon="ERROR")
             return{'FINISHED'}
-            
-        # TODO: Buscar inicio y fin de selecion de clips en ves de solo el primero
+
         if len(context.selected_sequences) > 0:
+
             Inicio = context.selected_sequences[0].frame_final_start
             Final = context.selected_sequences[0].frame_final_end
+            for clip in context.selected_sequences:
+                if clip.frame_final_start < Inicio:
+                    Inicio = clip.frame_final_start
+                if clip.frame_final_end > Final:
+                    Final = clip.frame_final_end
+
             Canal = context.selected_sequences[0].channel + 1
 
             bpy.ops.sequencer.sound_strip_add(

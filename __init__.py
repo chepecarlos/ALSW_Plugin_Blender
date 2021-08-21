@@ -5,6 +5,7 @@ from .operaciones.audio import insertaraudio
 from .operaciones.zoon import superzoon
 from .operaciones.clip import insertarsonido
 from .operaciones.mover import moverclip
+from .operaciones.indice import superindice
 from .operaciones.macros import add_hotkey, remove_hotkey
 
 bl_info = {
@@ -25,6 +26,7 @@ classes = [
     superzoon,
     insertarsonido,
     moverclip,
+    superindice,
     mipanel.mipanel
 ]
 

@@ -12,6 +12,11 @@ class mipanel(bpy.types.Panel):
         layout = self.layout
 
         row = layout.row()
+        row.label(text="Generador Indice")
+        row = layout.row()
+        ops = row.operator("scene.superindice", text="Generar")
+
+        row = layout.row()
         row.label(text="Musica sobre clip", icon="SOUND")
         row = layout.row()
         ops = row.operator("scene.insertaraudio", text="MrTee")

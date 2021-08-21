@@ -67,7 +67,6 @@ class superaliniar(bpy.types.Operator):
             if self.alineacion_horizontal is None:
                 self.alineacion_horizontal = 'nada'
 
-            ClipActual = context.selected_sequences[0]
             EsenaActual = context.scene.sequence_editor.active_strip.elements[0]
             AnchoCanva = context.scene.render.resolution_x
             AltoCanva = context.scene.render.resolution_y

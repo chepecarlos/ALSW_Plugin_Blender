@@ -37,6 +37,9 @@ class superindice(bpy.types.Operator):
         indice_x = ObtenerValor("data/blender.json", "indice_x")
         indice_y = ObtenerValor("data/blender.json", "indice_y")
 
+        fade_duracion = ObtenerValor("data/blender.json", "fade_duracion")
+        fade_mode = ObtenerValor("data/blender.json", "fade_mode")
+
         indice_texto_rojo = ObtenerValor(
             "data/blender.json", "indice_texto_rojo")
         indice_texto_azul = ObtenerValor(
@@ -77,5 +80,6 @@ class superindice(bpy.types.Operator):
             clipActual.location = (indice_x, indice_y)
             clipActual.color = color_texto
             clipActual.box_color = color_box
+            bpy.ops.sequencer.fades_add(duration_seconds=fade_duracion, type=fade_mode)
 
         return {"FINISHED"}

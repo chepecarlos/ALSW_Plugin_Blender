@@ -11,10 +11,8 @@ class mipanel(bpy.types.Panel):
         """Dibujar el panel."""
         layout = self.layout
 
-        row = layout.row()
-        row.label(text="Generador Indice")
-        row = layout.row()
-        ops = row.operator("scene.superindice", text="Generar")
+
+
 
         row = layout.row()
         row.label(text="Musica sobre clip", icon="SOUND")
@@ -82,3 +80,13 @@ class mipanel(bpy.types.Panel):
         ops.incrementro = False
         ops.macros = False
         ops.zoon = 8
+
+        row = layout.row()
+        row.label(text="Generador Indice")
+        row = layout.row()
+        ops = row.operator("scene.superindice", text="Generar")
+        
+        row = layout.row()
+        row.label(text="Indice para NocheProgramacion")
+        row = layout.row()
+        ops = row.operator("scene.exportarindice", text="Copiar")

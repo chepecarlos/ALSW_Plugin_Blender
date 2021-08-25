@@ -22,6 +22,7 @@ def add_hotkey():
 
         kmi = km.keymap_items.new("scene.superzoon", type="U", value="PRESS", ctrl=True, shift=False)
         kmi.properties.macros = True
+        kmi.properties.incrementro = True
 
         kmi = km.keymap_items.new("scene.moverclip", type="K", value="PRESS", ctrl=True, shift=False)
         kmi.properties.macros = True

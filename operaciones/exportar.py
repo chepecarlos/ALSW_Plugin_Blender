@@ -38,12 +38,16 @@ class exportarindice(bpy.types.Operator):
 
         markers_as_timecodes = []
         for marker in sorted_markers:
-            time = dt.datetime(year=1, month=1, day=1) + dt.timedelta(
-                seconds=marker.frame / framerate
-            )
-            markers_as_timecodes.append("  - title: " + marker.name)
-            markers_as_timecodes.append("    time: '" + time.strftime(time_format) + "'")
-            # markers_as_timecodes.append(time.strftime(time_format) + " " + marker.name)
 
+            Titulo = marker.name
+
+            if not Titulo.startswith(">"):
+
+                time = dt.datetime(year=1, month=1, day=1) + dt.timedelta(
+                    seconds=marker.frame / framerate
+                )
+                markers_as_timecodes.append("  - title: " + Titulo)
+                markers_as_timecodes.append("    time: '" + time.strftime(time_format) + "'")
+              
         bpy.context.window_manager.clipboard = "\n".join(markers_as_timecodes)
         return {"FINISHED"}

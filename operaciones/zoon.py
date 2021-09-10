@@ -64,6 +64,8 @@ class superzoon(bpy.types.Operator):
             if ClipActual.use_proxy:
                 # Buscar una forma no sucia
                 MultiProxy = ObtenerValor("data/blender.json", "multi_proxy")
+                if MultiProxy is None:
+                    MultiProxy = 1
                 Alto *= MultiProxy
                 Ancho *= MultiProxy
             PosicionX = ClipActual.transform.offset_x

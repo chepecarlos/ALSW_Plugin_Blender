@@ -2,7 +2,6 @@
 
 import json
 import os
-# import yaml
 import sys
 
 from pathlib import Path
@@ -10,7 +9,7 @@ from pathlib import Path
 
 def ObtenerFolderConfig():
     """Devuelte ruta donde esta el folder de configuracion."""
-    Folder = UnirPath(Path.home(), '.config/elgatoalsw')
+    Folder = UnirPath(Path.home(), '.config/elgatoalsw-cli')
 
     return Folder
 

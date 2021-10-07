@@ -10,6 +10,9 @@ def add_hotkey():
         kmi = km.keymap_items.new("scene.insertarsonido", 'Y', 'PRESS', ctrl=True, shift=True)
         kmi.properties.macros = True
 
+        kmi = km.keymap_items.new("scene.insertarimagen", type="H", value="PRESS", ctrl=True, shift=True)
+        kmi.properties.macros = True
+
         kmi = km.keymap_items.new("scene.insertaraudio", 'O', 'PRESS', ctrl=True, shift=True)
         kmi.properties.macros = True
 
@@ -24,7 +27,7 @@ def add_hotkey():
         kmi.properties.macros = True
         kmi.properties.incrementro = True
 
-        kmi = km.keymap_items.new("scene.moverclip", type="K", value="PRESS", ctrl=True, shift=False)
+        kmi = km.keymap_items.new("scene.moverclip", type="J", value="PRESS", ctrl=True, shift=False)
         kmi.properties.macros = True
 
         addon_keymaps.append((km, kmi))

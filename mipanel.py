@@ -1,8 +1,8 @@
 import bpy
 
-class mipanel(bpy.types.Panel):
+class mi_PT_panel(bpy.types.Panel):
     """Creates a Panel in the Object properties window."""
-    bl_idname = "my.mipanel"
+    bl_idname = "MY_PT_mipanel"
     bl_label = "Panel ALSW"
     bl_space_type = 'SEQUENCE_EDITOR'
     bl_region_type = 'UI'
@@ -10,9 +10,6 @@ class mipanel(bpy.types.Panel):
     def draw(self, context):
         """Dibujar el panel."""
         layout = self.layout
-
-
-
 
         row = layout.row()
         row.label(text="Musica sobre clip", icon="SOUND")

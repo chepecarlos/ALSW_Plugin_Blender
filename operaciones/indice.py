@@ -97,7 +97,8 @@ class superindice(bpy.types.Operator):
                 clipActual.use_box = True
                 clipActual.align_x = 'LEFT'
                 clipActual.align_y = 'TOP'
-                clipActual.use_bold = True
+                # Incompatible con verciones viejas de blender
+                # clipActual.use_bold = True 
                 clipActual.location = (indice_x, indice_y)
                 clipActual.color = color_texto
                 clipActual.box_color = color_box

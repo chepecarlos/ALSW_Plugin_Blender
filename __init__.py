@@ -3,8 +3,8 @@ from . import mipanel
 from .operaciones.alinear import superaliniar
 from .operaciones.audio import insertaraudio
 from .operaciones.zoon import superzoon
-from .operaciones.clip import insertarsonido
-from .operaciones.insertarimagen import insertarimagen
+# from .operaciones.clip import insertarsonido
+from .operaciones.superinsertar import superinsertar
 from .operaciones.mover import moverclip
 from .operaciones.indice import superindice
 from .operaciones.exportar import exportarindice
@@ -24,10 +24,9 @@ bl_info = {
 
 classes = [
     insertaraudio,
-    insertarimagen,
+    superinsertar,
     superaliniar,
     superzoon,
-    insertarsonido,
     moverclip,
     superindice,
     exportarindice,

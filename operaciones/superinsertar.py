@@ -54,6 +54,9 @@ class superinsertar(bpy.types.Operator):
                 frame_end=FrameActual + 60,
                 channel=1,
             )
+            for Secuencia in context.selected_sequences:
+                Secuencia.blend_type = 'ALPHA_OVER'
+
 
         elif Tipo in ("avi", "mp4", "mpg", "mpeg", "mov", "mkv", "dv", "flv"):
             bpy.ops.sequencer.movie_strip_add(filepath=ClipActual, frame_start=FrameActual, channel=1)

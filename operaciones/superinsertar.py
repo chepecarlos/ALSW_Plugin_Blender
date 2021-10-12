@@ -10,6 +10,7 @@ from bpy.props import (
 from .FuncionesArchivos import ObtenerValor, SalvarValor
 from .extras import MostarMensajeBox
 
+
 class superinsertar(bpy.types.Operator):
     bl_idname = "scene.superinsertar"
     bl_label = "Insertar Clip"
@@ -45,6 +46,7 @@ class superinsertar(bpy.types.Operator):
             Archivo = FolderActual[-1]
             FolderActual = FolderActual[:-1]
             FolderActual = "/".join(FolderActual)
+            FolderActual = FolderActual + "/"
             bpy.ops.sequencer.image_strip_add(
                 directory=FolderActual,
                 files=[{"name": Archivo, "name": Archivo}],
@@ -52,10 +54,11 @@ class superinsertar(bpy.types.Operator):
                 frame_end=FrameActual + 60,
                 channel=1,
             )
+
         elif Tipo in ("avi", "mp4", "mpg", "mpeg", "mov", "mkv", "dv", "flv"):
             bpy.ops.sequencer.movie_strip_add(filepath=ClipActual, frame_start=FrameActual, channel=1)
             for Secuencia in context.selected_sequences:
-                if Secuencia.type == 'SOUND':
+                if Secuencia.type == "SOUND":
                     Secuencia.show_waveform = True
                     if Volumen is not None:
                         Secuencia.volume = Volumen
@@ -67,8 +70,7 @@ class superinsertar(bpy.types.Operator):
                 context.selected_sequences[0].volume = Volumen
         else:
             MostarMensajeBox("Formato no reconocido habla con ChepeCarlos", title="Error", icon="ERROR")
-        
-        
+
         SalvarValor("data/blender.json", "volumen", None)
         SalvarValor("data/blender.json", "ClipActual", None)
         return {"FINISHED"}

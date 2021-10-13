@@ -1,4 +1,5 @@
 import bpy
+import os
 
 from bpy.props import (
     BoolProperty,
@@ -35,6 +36,11 @@ class superinsertar(bpy.types.Operator):
             MostarMensajeBox("Pista No asignada en: data/blender.json", title="Error", icon="ERROR")
             return {"FINISHED"}
 
+        if not os.path.isfile(ClipActual):
+            MostarMensajeBox(f"Archivo no Existe {ClipActual}", title="Error", icon="ERROR")
+            self.report({"INFO"}, f"Archivo no Existe {ClipActual}")
+            return {"FINISHED"}
+
         Volumen = ObtenerValor("data/blender.json", "volumen")
         Tipo = ClipActual.split(".")[-1].lower()
         print(f"Tipo de Archivo {Tipo} de {ClipActual}")
@@ -42,6 +48,9 @@ class superinsertar(bpy.types.Operator):
         FrameActual = context.scene.frame_current
 
         if Tipo in ("jpg", "jpeg", "bmp", "png", "gif", "tga", "tiff"):
+
+            # FolderActual = os.path.dirname(ClipActual)
+
             FolderActual = ClipActual.split("/")
             Archivo = FolderActual[-1]
             FolderActual = FolderActual[:-1]

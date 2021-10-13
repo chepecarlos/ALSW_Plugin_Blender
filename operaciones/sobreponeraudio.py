@@ -1,4 +1,5 @@
 import bpy
+import os
 
 from bpy.props import (
     BoolProperty,
@@ -11,8 +12,8 @@ from .FuncionesArchivos import ObtenerValor, SalvarValor
 from .extras import MostarMensajeBox
 
 
-class insertaraudio(bpy.types.Operator):
-    bl_idname = "scene.insertaraudio"
+class sobreponeraudio(bpy.types.Operator):
+    bl_idname = "scene.sobreponeraudio"
     bl_label = "Insert Video"
     bl_description = "Insertar pista de audio sobre otra clip"
     bl_options = {"REGISTER", "UNDO"}
@@ -41,6 +42,11 @@ class insertaraudio(bpy.types.Operator):
             MostarMensajeBox("Pista No asignada en: data/blender.json",
                              title="Error", icon="ERROR")
             return{'FINISHED'}
+
+        if not os.path.isfile(VideoActual):
+            MostarMensajeBox(f"Archivo no Existe {VideoActual}", title="Error", icon="ERROR")
+            self.report({"INFO"}, f"Archivo no Existe {VideoActual}")
+            return {"FINISHED"}
 
         if len(context.selected_sequences) > 0:
 

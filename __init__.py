@@ -1,14 +1,14 @@
 import bpy
+
 from . import mipanel
 from .operaciones.alinear import superaliniar
-from .operaciones.audio import insertaraudio
-from .operaciones.zoon import superzoon
-# from .operaciones.clip import insertarsonido
-from .operaciones.superinsertar import superinsertar
-from .operaciones.mover import moverclip
-from .operaciones.indice import superindice
 from .operaciones.exportar import exportarindice
+from .operaciones.indice import superindice
 from .operaciones.macros import add_hotkey, remove_hotkey
+from .operaciones.mover import moverclip
+from .operaciones.sobreponeraudio import sobreponeraudio
+from .operaciones.superinsertar import superinsertar
+from .operaciones.zoon import superzoon
 
 bl_info = {
     "name": "ALSW_Plugin_Blender",
@@ -23,7 +23,7 @@ bl_info = {
 }
 
 classes = [
-    insertaraudio,
+    sobreponeraudio,
     superinsertar,
     superaliniar,
     superzoon,

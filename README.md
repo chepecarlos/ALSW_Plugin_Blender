@@ -17,10 +17,12 @@ Inserta clip en posicion de Cursor, ya sea Audio, Video o Imagen
 La ruta tiene que ser Absoluta 
 
 
-| Nombre   | Atributo | Tipo  | Requerido | Ejemplo         |
-| -------- | -------- | ----- | --------- | --------------- |
-| Direcion | clip     | stl   | Trur      | /home/pollo.png |
-| Volumen  | volumen  | float | False     | 0.2             |
+| Nombre   | Atributo | Tipo       | Defaul    | Ejemplo         |
+| -------- | -------- | ---------- | --------- | --------------- |
+| Direcion | clip     | stl        | Requerido | /home/pollo.png |
+| Volumen  | volumen  | float (R+) | 1         | 1.2             |
+| Desface  | desface  | float      | 0         | -10             |
+| Duracion | duracion | float      | 60        | 10              |
 
 Atajo de Teclado:
 ```
@@ -29,11 +31,15 @@ ctrl + shift + y
 
 ## Sobreponer Audio
 
-
+Has clip sobre un o mas clip para agregar 
 
 ## Exportar Extra
 
 Exportar markas extras para ayudar en la preparacion de video
+
+**Nota**: Solo funciona si existe Marcas
+
+**Tipos de Prefijos**
 
 | Nombre         | Prefijo | Ejemplo                      |
 | -------------- | ------- | ---------------------------- |

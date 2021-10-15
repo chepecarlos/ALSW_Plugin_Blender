@@ -23,12 +23,12 @@ class exportarextra(bpy.types.Operator):
         name="prefijo del indice",
         description="Prefijo a buscar",
         items=(
-            ("link", "Links >L", "L"),
-            ("tarjeta", "Tarjetas >T", "T"),
-            ("video", "Videos >V", "V"),
-            ("ads", "Ads >A", "A"),
-            ("credito", "Creditos >C", "C"),
-            ("pantalla", "Pantalla Final >P", "P"),
+            ("link", "Links >L", "Link de referencia de los videos"),
+            ("tarjeta", "Tarjetas >T", "Tarjetas que se pones esquina derecha del video"),
+            ("video", "Videos >V", "Video que se mencioan en el video"),
+            ("ads", "Ads >A", "Publicidad del video"),
+            ("credito", "Creditos >C", "Credito a contenido usando en el video"),
+            ("pantalla", "Pantalla Final >P", "Pantalla final del video"),
         ),
         default="link",
     )

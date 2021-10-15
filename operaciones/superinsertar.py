@@ -7,6 +7,7 @@ from bpy.props import (
     EnumProperty,
     IntProperty,
 )
+from bpy.types import Volume
 
 from .FuncionesArchivos import ObtenerValor, SalvarValor
 from .extras import MostarMensajeBox
@@ -17,6 +18,21 @@ class superinsertar(bpy.types.Operator):
     bl_label = "Insertar Clip"
     bl_description = "Insertar imagen, video o audio en posicion de curso"
     bl_options = {"REGISTER", "UNDO"}
+
+    desface: IntProperty(
+        name="desface",
+        description="desface de clip",
+        default=0,
+    )
+
+    duracion: IntProperty(
+        name="duracion",
+        description="duracion de clip",
+        default=60,
+        min=0,
+    )
+
+    volumen: FloatProperty(name="volumen", description="volumen de Audio", default=1, min=0)
 
     macros: BoolProperty(name="macro", description="funcion con macro para zoon", default=False)
 
@@ -42,6 +58,20 @@ class superinsertar(bpy.types.Operator):
             return {"FINISHED"}
 
         Volumen = ObtenerValor("data/blender.json", "volumen")
+        if Volumen is None:
+            Volumen = self.volumen
+        self.report({"INFO"}, f"Volumen: {Volumen}")
+
+        Desface = ObtenerValor("data/blender.json", "desface")
+        if Desface is None:
+            Desface = self.desface
+        self.report({"INFO"}, f"Desface: {Desface}")
+
+        Duracion = ObtenerValor("data/blender.json", "duracion")
+        if Duracion is None:
+            Duracion = self.duracion
+        self.report({"INFO"}, f"Duracion: {Duracion}")
+
         Tipo = ClipActual.split(".")[-1].lower()
         print(f"Tipo de Archivo {Tipo} de {ClipActual}")
 
@@ -59,29 +89,26 @@ class superinsertar(bpy.types.Operator):
             bpy.ops.sequencer.image_strip_add(
                 directory=FolderActual,
                 files=[{"name": Archivo, "name": Archivo}],
-                frame_start=FrameActual,
-                frame_end=FrameActual + 60,
+                frame_start=FrameActual + Desface,
+                frame_end=FrameActual + Desface + Duracion,
                 channel=1,
             )
             for Secuencia in context.selected_sequences:
-                Secuencia.blend_type = 'ALPHA_OVER'
-
+                Secuencia.blend_type = "ALPHA_OVER"
 
         elif Tipo in ("avi", "mp4", "mpg", "mpeg", "mov", "mkv", "dv", "flv"):
-            bpy.ops.sequencer.movie_strip_add(filepath=ClipActual, frame_start=FrameActual, channel=1)
-            for Secuencia in context.selected_sequences:
-                if Secuencia.type == "SOUND":
-                    Secuencia.show_waveform = True
-                    if Volumen is not None:
-                        Secuencia.volume = Volumen
-
+            bpy.ops.sequencer.movie_strip_add(filepath=ClipActual, frame_start=FrameActual + Desface, channel=1)
         elif Tipo in ("acc", "ac3", "flac", "mp2", "mp3", "m4a", "pcm", "ogg"):
-            bpy.ops.sequencer.sound_strip_add(filepath=ClipActual, frame_start=FrameActual, channel=1)
-            context.selected_sequences[0].show_waveform = True
-            if Volumen is not None:
-                context.selected_sequences[0].volume = Volumen
+            bpy.ops.sequencer.sound_strip_add(filepath=ClipActual, frame_start=FrameActual + Desface, channel=1)
         else:
             MostarMensajeBox("Formato no reconocido habla con ChepeCarlos", title="Error", icon="ERROR")
+            return {"FINISHED"}
+
+        for Secuencia in context.selected_sequences:
+            if Secuencia.type == "SOUND":
+                Secuencia.show_waveform = True
+                if Volumen is not None:
+                    Secuencia.volume = Volumen
 
         SalvarValor("data/blender.json", "volumen", None)
         SalvarValor("data/blender.json", "ClipActual", None)

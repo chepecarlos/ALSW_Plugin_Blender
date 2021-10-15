@@ -14,7 +14,7 @@ class mi_PT_panel(bpy.types.Panel):
         row = layout.row()
         row.label(text="Musica sobre clip", icon="SOUND")
         row = layout.row()
-        ops = row.operator("scene.insertaraudio", text="MrTee")
+        ops = row.operator("scene.sobreponeraudio", text="MrTee")
 
         row = layout.row()
         row.label(text="Alineacion")
@@ -87,3 +87,21 @@ class mi_PT_panel(bpy.types.Panel):
         row.label(text="Indice para NocheProgramacion")
         row = layout.row()
         ops = row.operator("scene.exportarindice", text="Copiar")
+        
+        row = layout.row()
+        row.label(text="Exportar Markas Extras")
+
+        row = layout.row()
+        ops = row.operator("scene.exportarextra", text="Links")
+        ops.prefijo = "link"
+        ops = row.operator("scene.exportarextra", text="Tarjetas")
+        ops.prefijo = "tarjeta"
+        ops = row.operator("scene.exportarextra", text="Videos")
+        ops.prefijo = "video"
+        row = layout.row()
+        ops = row.operator("scene.exportarextra", text="Ads")
+        ops.prefijo = "ads"
+        ops = row.operator("scene.exportarextra", text="Creditos")
+        ops.prefijo = "credito"
+        ops = row.operator("scene.exportarextra", text="Pantalla Final")
+        ops.prefijo = "pantalla"

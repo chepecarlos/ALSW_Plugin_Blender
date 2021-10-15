@@ -3,6 +3,7 @@ import bpy
 from . import mipanel
 from .operaciones.alinear import superaliniar
 from .operaciones.exportar import exportarindice
+from .operaciones.exportarextras import exportarextra
 from .operaciones.indice import superindice
 from .operaciones.macros import add_hotkey, remove_hotkey
 from .operaciones.mover import moverclip
@@ -29,6 +30,7 @@ classes = [
     superzoon,
     moverclip,
     superindice,
+    exportarextra,
     exportarindice,
     mipanel.mi_PT_panel
 ]

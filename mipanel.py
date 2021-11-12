@@ -106,5 +106,5 @@ class mi_PT_panel(bpy.types.Panel):
         ops = row.operator("scene.exportarextra", text="Pantalla Final")
         ops.prefijo = "pantalla"
         row = layout.row()
-        ops = row.operator("scene.exportarextra", text="Recursos de Edición")
+        ops = row.operator("scene.exportarextra", text="Recursos")
         ops.prefijo = "recursos"

@@ -15,7 +15,7 @@ bl_info = {
     "name": "ALSW_Plugin_Blender",
     "author": "ChepeCarlos",
     "description": "Heramientas Extra para Sequencer",
-    "blender": (2, 93, 5),
+    "blender": (2, 92, 0),
     "version": (0, 0, 6),
     "license": "GPL",
     "location": "Sequencer",

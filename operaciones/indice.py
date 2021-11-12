@@ -88,8 +88,9 @@ class superindice(bpy.types.Operator):
             Titulo = indice.name
             if not Titulo.startswith(">"):
                 frame = indice.frame
+                # TODO: Buscar el ultimo canal usado por los clips 
                 bpy.ops.sequencer.effect_strip_add(
-                    type='TEXT', frame_start=frame, frame_end=frame+self.Duracion, channel=1)
+                    type='TEXT', frame_start=frame, frame_end=frame+self.Duracion, channel=4)
                 clipActual = context.selected_sequences[0]
                 clipActual.name = f"{prefiji}{Titulo}"
                 clipActual.text = Titulo
@@ -101,7 +102,9 @@ class superindice(bpy.types.Operator):
                 # clipActual.use_bold = True 
                 clipActual.location = (indice_x, indice_y)
                 clipActual.color = color_texto
+                clipActual.wrap_width = 1
                 clipActual.box_color = color_box
                 bpy.ops.sequencer.fades_add(duration_seconds=fade_duracion, type=fade_mode)
+
 
         return {"FINISHED"}

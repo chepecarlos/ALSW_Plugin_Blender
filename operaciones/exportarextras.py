@@ -29,6 +29,8 @@ class exportarextra(bpy.types.Operator):
             ("ads", "Ads >A", "Publicidad del video"),
             ("credito", "Creditos >C", "Credito a contenido usando en el video"),
             ("pantalla", "Pantalla Final >P", "Pantalla final del video"),
+            ("recursos", "Recursos de Edición >E", "Recursos de Edición"),
+            
         ),
         default="link",
     )
@@ -71,6 +73,8 @@ class exportarextra(bpy.types.Operator):
                 Prefijo = ">P "
             elif self.prefijo == "ads":
                 Prefijo = ">A "
+            elif self.prefijo == "recursos":
+                Prefijo = ">E "                
 
             if Titulo.startswith(Prefijo):
 

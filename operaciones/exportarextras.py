@@ -76,7 +76,7 @@ class exportarextra(bpy.types.Operator):
 
                 time = dt.datetime(year=1, month=1, day=1) + dt.timedelta(seconds=marker.frame / framerate)
                 Tiempo = time.strftime(time_format)
-                Titulo = Titulo.removeprefix(Prefijo)
+                Titulo = Titulo.replace(Prefijo, "")
                 self.report({"INFO"}, f"Encontrado {Tiempo} {Titulo}")
                 markers_as_timecodes.append(f"Tipo({self.prefijo})")
                 markers_as_timecodes.append(Tiempo)

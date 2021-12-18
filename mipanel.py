@@ -98,6 +98,7 @@ class mi_PT_panel(bpy.types.Panel):
         ops.prefijo = "tarjeta"
         ops = row.operator("scene.exportarextra", text="Videos")
         ops.prefijo = "video"
+        
         row = layout.row()
         ops = row.operator("scene.exportarextra", text="Ads")
         ops.prefijo = "ads"
@@ -105,6 +106,9 @@ class mi_PT_panel(bpy.types.Panel):
         ops.prefijo = "credito"
         ops = row.operator("scene.exportarextra", text="Pantalla Final")
         ops.prefijo = "pantalla"
+
         row = layout.row()
         ops = row.operator("scene.exportarextra", text="Recursos")
         ops.prefijo = "recursos"
+        ops = row.operator("scene.exportarextra", text="Notas")
+        ops.prefijo = "notas"

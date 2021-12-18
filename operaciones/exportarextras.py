@@ -30,6 +30,7 @@ class exportarextra(bpy.types.Operator):
             ("credito", "Creditos >C", "Credito a contenido usando en el video"),
             ("pantalla", "Pantalla Final >P", "Pantalla final del video"),
             ("recursos", "Recursos de Edición >R", "Recursos de Edición"),
+            ("notas", "Notas de Edición >R", "Notas de Edicion"),
         ),
         default="link",
     )
@@ -54,14 +55,18 @@ class exportarextra(bpy.types.Operator):
         time_format = "%H:%M:%S" if last_marker_seconds >= seconds_in_hour else "%M:%S"
 
         markers_as_timecodes = []
+        PrimerIndice = None
         for marker in sorted_markers:
 
             Titulo = marker.name
-
+            Encontrado = False
             Prefijo = ""
 
             if self.prefijo == "link":
                 Prefijo = ">L "
+                if Titulo.startswith(Prefijo):
+                    markers_as_timecodes.append(ExpoertarLinks(Prefijo, Titulo))
+                Encontrado = True
             elif self.prefijo == "tarjeta":
                 Prefijo = ">T "
             elif self.prefijo == "video":
@@ -74,18 +79,18 @@ class exportarextra(bpy.types.Operator):
                 Prefijo = ">A "
             elif self.prefijo == "recursos":
                 Prefijo = ">R "
+            elif self.prefijo == "notas":
+                Prefijo = ">N "
 
-            if Titulo.startswith(Prefijo):
+            if Titulo.startswith(Prefijo) and not Encontrado:
 
                 time = dt.datetime(year=1, month=1, day=1) + dt.timedelta(seconds=marker.frame / framerate)
                 Tiempo = time.strftime(time_format)
                 Titulo = Titulo.replace(Prefijo, "")
                 self.report({"INFO"}, f"Encontrado {Tiempo} {Titulo}")
-                markers_as_timecodes.append(f"Tipo({self.prefijo})")
-                markers_as_timecodes.append(Tiempo)
-                markers_as_timecodes.append(Titulo)
+                markers_as_timecodes.append(f"{Tiempo} - {Titulo}")
 
-        if len(markers_as_timecodes) == 0:
+        if not markers_as_timecodes:
             self.report({"INFO"}, f"No hay {Prefijo} en video")
             MostarMensajeBox(f"No hay {Prefijo} en video", title="Error", icon="ERROR")
             return {"CANCELLED"}
@@ -93,3 +98,10 @@ class exportarextra(bpy.types.Operator):
         bpy.context.window_manager.clipboard = "\n".join(markers_as_timecodes)
 
         return {"FINISHED"}
+
+def ExpoertarLinks(Prefijo, Titulo):
+    Titulo = Titulo.replace(Prefijo, "")
+    Titulo = Titulo.split("-")
+    url = Titulo[1]
+    title = Titulo[0]
+    return f"  - title: {title}\n    url: {url}"

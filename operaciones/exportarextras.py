@@ -62,6 +62,9 @@ class exportarextra(bpy.types.Operator):
             Encontrado = False
             Prefijo = ""
 
+            if PrimerIndice is None:
+                PrimerIndice = marker.frame
+
             if self.prefijo == "link":
                 Prefijo = ">L "
                 if Titulo.startswith(Prefijo):
@@ -84,7 +87,9 @@ class exportarextra(bpy.types.Operator):
 
             if Titulo.startswith(Prefijo) and not Encontrado:
 
-                time = dt.datetime(year=1, month=1, day=1) + dt.timedelta(seconds=marker.frame / framerate)
+                time = dt.datetime(year=1, month=1, day=1) + dt.timedelta(
+                    seconds=(marker.frame - PrimerIndice) / framerate
+                )
                 Tiempo = time.strftime(time_format)
                 Titulo = Titulo.replace(Prefijo, "")
                 self.report({"INFO"}, f"Encontrado {Tiempo} {Titulo}")
@@ -98,6 +103,7 @@ class exportarextra(bpy.types.Operator):
         bpy.context.window_manager.clipboard = "\n".join(markers_as_timecodes)
 
         return {"FINISHED"}
+
 
 def ExpoertarLinks(Prefijo, Titulo):
     Titulo = Titulo.replace(Prefijo, "")

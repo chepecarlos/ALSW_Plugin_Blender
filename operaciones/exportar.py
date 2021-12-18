@@ -25,8 +25,7 @@ class exportarindice(bpy.types.Operator):
     def execute(self, context):
         render = context.scene.render
 
-        if len(context.scene.timeline_markers) == 0:
-            # TODO Limpiuar codigo en futuro 
+        if not context.scene.timeline_markers:
             self.report({"INFO"}, "No markers found")
             return {"CANCELLED"}
 

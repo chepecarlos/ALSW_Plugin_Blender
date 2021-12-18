@@ -26,6 +26,7 @@ class exportarindice(bpy.types.Operator):
         render = context.scene.render
 
         if len(context.scene.timeline_markers) == 0:
+            # TODO Limpiuar codigo en futuro 
             self.report({"INFO"}, "No markers found")
             return {"CANCELLED"}
 
@@ -37,15 +38,19 @@ class exportarindice(bpy.types.Operator):
         time_format = "%H:%M:%S" if last_marker_seconds >= seconds_in_hour else "%M:%S"
 
         markers_as_timecodes = []
+        PrimerIndice = None
         for marker in sorted_markers:
-
             Titulo = marker.name
 
             if not Titulo.startswith(">"):
+                
+                if PrimerIndice is None:
+                    PrimerIndice = marker.frame 
 
                 time = dt.datetime(year=1, month=1, day=1) + dt.timedelta(
-                    seconds=marker.frame / framerate
+                    seconds=(marker.frame - PrimerIndice ) / framerate
                 )
+
                 markers_as_timecodes.append("  - title: " + Titulo)
                 markers_as_timecodes.append("    time: '" + time.strftime(time_format) + "'")
               

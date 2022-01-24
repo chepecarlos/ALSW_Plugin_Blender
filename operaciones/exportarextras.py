@@ -1,16 +1,11 @@
-import bpy
-
-from bpy.props import (
-    BoolProperty,
-    FloatProperty,
-    EnumProperty,
-    IntProperty,
-)
-from operator import attrgetter
 import datetime as dt
+from operator import attrgetter
 
-from .FuncionesArchivos import ObtenerValor, SalvarValor
+import bpy
+from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty
+
 from .extras import MostarMensajeBox
+from .FuncionesArchivos import ObtenerValor, SalvarValor
 
 
 class exportarextra(bpy.types.Operator):
@@ -108,6 +103,11 @@ class exportarextra(bpy.types.Operator):
 def ExpoertarLinks(Prefijo, Titulo):
     Titulo = Titulo.replace(Prefijo, "")
     Titulo = Titulo.split("-")
-    url = Titulo[1]
+
     title = Titulo[0]
+
+    if len(Titulo) < 2:
+        return f"  - title: {title}\n"
+
+    url = Titulo[1]
     return f"  - title: {title}\n    url: {url}"

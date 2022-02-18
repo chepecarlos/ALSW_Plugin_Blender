@@ -164,7 +164,18 @@ class superinsertar(bpy.types.Operator):
                     Secuencia.transform.scale_x = self.escala
                     Secuencia.transform.scale_y = self.escala
 
-        atributos = {"posicion_x", "posicion_y", "opacidad", "volumen", "desface", "origen_x", "origen_y", "escala"}
+        atributos = {
+            "posicion_x",
+            "posicion_y",
+            "opacidad",
+            "volumen",
+            "desface",
+            "origen_x",
+            "origen_y",
+            "escala",
+            "espejo_x",
+            "espejo_y",
+        }
 
         for atributo in atributos:
             SalvarValor("data/blender.json", atributo, None)

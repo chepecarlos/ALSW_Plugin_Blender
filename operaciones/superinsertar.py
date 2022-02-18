@@ -32,6 +32,8 @@ class superinsertar(bpy.types.Operator):
     posicion_y: IntProperty(name="posición y", description="Posición y del clip", default=0)
     angulo: FloatProperty(name="angulo", description="Angulo del Cip", default=0, max=360)
 
+    escala: FloatProperty(name="angulo", description="Angulo del Cip", default=0, min=0)
+
     origen_x: FloatProperty(name="oringe x", description="Origen x del Cip", default=0.5, min=0, max=1)
     origen_y: FloatProperty(name="oringe y", description="Origen y del Cip", default=0.5, min=0, max=1)
 
@@ -98,6 +100,10 @@ class superinsertar(bpy.types.Operator):
         if data is not None:
             self.angulo = data
 
+        data = ObtenerValor("data/blender.json", "escala")
+        if data is not None:
+            self.escala = data
+
         Tipo = ClipActual.split(".")[-1].lower()
         print(f"Tipo de Archivo {Tipo} de {ClipActual}")
 
@@ -141,8 +147,11 @@ class superinsertar(bpy.types.Operator):
                 Secuencia.blend_alpha = self.opacidad
                 Secuencia.transform.origin[0] = self.origen_x
                 Secuencia.transform.origin[1] = self.origen_y
+                if self.escala != 0:
+                    Secuencia.transform.scale_x = self.escala
+                    Secuencia.transform.scale_y = self.escala
 
-        atributos = {"posicion_x", "posicion_y", "opacidad", "volumen", "desface", "origen_x", "origen_y"}
+        atributos = {"posicion_x", "posicion_y", "opacidad", "volumen", "desface", "origen_x", "origen_y", "escala"}
 
         for atributo in atributos:
             SalvarValor("data/blender.json", atributo, None)

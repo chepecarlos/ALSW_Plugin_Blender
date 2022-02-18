@@ -1,22 +1,18 @@
-import bpy
 import os
+from math import pi
 
-from bpy.props import (
-    BoolProperty,
-    FloatProperty,
-    EnumProperty,
-    IntProperty,
-)
+import bpy
+from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty
 from bpy.types import Volume
 
-from .FuncionesArchivos import ObtenerValor, SalvarValor
 from .extras import MostarMensajeBox
+from .FuncionesArchivos import ObtenerValor, SalvarValor
 
 
 class superinsertar(bpy.types.Operator):
     bl_idname = "scene.superinsertar"
     bl_label = "Insertar Clip"
-    bl_description = "Insertar imagen, video o audio en posicion de curso"
+    bl_description = "Insertar imagen, video o audio en posición de curso"
     bl_options = {"REGISTER", "UNDO"}
 
     desface: IntProperty(
@@ -27,14 +23,23 @@ class superinsertar(bpy.types.Operator):
 
     duracion: IntProperty(
         name="duracion",
-        description="duracion de clip",
+        description="duracion del clip",
         default=60,
         min=0,
     )
 
-    volumen: FloatProperty(name="volumen", description="volumen de Audio", default=1, min=0)
+    posicion_x: IntProperty(name="posición x", description="Posición x del clip", default=0)
+    posicion_y: IntProperty(name="posición y", description="Posición y del clip", default=0)
+    angulo: FloatProperty(name="angulo", description="Angulo del Cip", default=0, max=360)
 
-    macros: BoolProperty(name="macro", description="funcion con macro para zoon", default=False)
+    origen_x: FloatProperty(name="oringe x", description="Origen x del Cip", default=0.5, min=0, max=1)
+    origen_y: FloatProperty(name="oringe y", description="Origen y del Cip", default=0.5, min=0, max=1)
+
+    opacidad: FloatProperty(name="opacidad", description="Opacidad del clip", default=1, min=0, max=1)
+
+    volumen: FloatProperty(name="volumen", description="Volumen de Audio", default=1, min=0)
+
+    macros: BoolProperty(name="macro", description="Funcion con macro para zoon", default=False)
 
     @classmethod
     def poll(cls, context):
@@ -57,20 +62,33 @@ class superinsertar(bpy.types.Operator):
             self.report({"INFO"}, f"Archivo no Existe {ClipActual}")
             return {"FINISHED"}
 
-        Volumen = ObtenerValor("data/blender.json", "volumen")
-        if Volumen is None:
-            Volumen = self.volumen
-        self.report({"INFO"}, f"Volumen: {Volumen}")
+        data = ObtenerValor("data/blender.json", "volumen")
+        if data is None:
+            self.volumen = data
 
-        Desface = ObtenerValor("data/blender.json", "desface")
-        if Desface is None:
-            Desface = self.desface
-        self.report({"INFO"}, f"Desface: {Desface}")
+        data = ObtenerValor("data/blender.json", "desface")
+        if data is not None:
+            self.desface = data
 
-        Duracion = ObtenerValor("data/blender.json", "duracion")
-        if Duracion is None:
-            Duracion = self.duracion
-        self.report({"INFO"}, f"Duracion: {Duracion}")
+        data = ObtenerValor("data/blender.json", "duracion")
+        if data is not None:
+            self.duracion = data
+
+        data = ObtenerValor("data/blender.json", "posicion_x")
+        if data is not None:
+            self.posicion_x = data
+
+        data = ObtenerValor("data/blender.json", "opacidad")
+        if data is not None:
+            self.opacidad = data
+
+        data = ObtenerValor("data/blender.json", "posicion_y")
+        if data is not None:
+            self.posicion_y = data
+
+        data = ObtenerValor("data/blender.json", "angulo")
+        if data is not None:
+            self.angulo = data
 
         Tipo = ClipActual.split(".")[-1].lower()
         print(f"Tipo de Archivo {Tipo} de {ClipActual}")
@@ -93,8 +111,6 @@ class superinsertar(bpy.types.Operator):
                 frame_end=FrameActual + Desface + Duracion,
                 channel=1,
             )
-            for Secuencia in context.selected_sequences:
-                Secuencia.blend_type = "ALPHA_OVER"
 
         elif Tipo in ("avi", "mp4", "mpg", "mpeg", "mov", "mkv", "dv", "flv"):
             bpy.ops.sequencer.movie_strip_add(filepath=ClipActual, frame_start=FrameActual + Desface, channel=1)
@@ -109,7 +125,18 @@ class superinsertar(bpy.types.Operator):
                 Secuencia.show_waveform = True
                 if Volumen is not None:
                     Secuencia.volume = Volumen
+            elif Secuencia.type == "IMAGE" or Secuencia.type == "MOVIE":
+                Secuencia.blend_type = "ALPHA_OVER"
+                Secuencia.transform.rotation = self.angulo * (pi / 180)
+                Secuencia.transform.offset_x = self.posicion_x
+                Secuencia.transform.offset_y = self.posicion_y
+                Secuencia.blend_alpha = self.opacidad
+                Secuencia.transform.origin[0] = self.origen_x
+                Secuencia.transform.origin[1] = self.origen_y
 
-        SalvarValor("data/blender.json", "volumen", None)
-        SalvarValor("data/blender.json", "ClipActual", None)
+        atributos = {"posicion_x", "posicion_y", "opacidad", "volumen", "desface", "origen_x", "origen_y"}
+
+        for atributo in atributos:
+            SalvarValor("data/blender.json", atributo, None)
+
         return {"FINISHED"}

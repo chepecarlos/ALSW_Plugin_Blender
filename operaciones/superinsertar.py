@@ -63,7 +63,7 @@ class superinsertar(bpy.types.Operator):
             return {"FINISHED"}
 
         data = ObtenerValor("data/blender.json", "volumen")
-        if data is None:
+        if data is not None:
             self.volumen = data
 
         data = ObtenerValor("data/blender.json", "desface")
@@ -78,13 +78,21 @@ class superinsertar(bpy.types.Operator):
         if data is not None:
             self.posicion_x = data
 
-        data = ObtenerValor("data/blender.json", "opacidad")
-        if data is not None:
-            self.opacidad = data
-
         data = ObtenerValor("data/blender.json", "posicion_y")
         if data is not None:
             self.posicion_y = data
+
+        data = ObtenerValor("data/blender.json", "origen_x")
+        if data is not None:
+            self.origen_x = data
+
+        data = ObtenerValor("data/blender.json", "origen_y")
+        if data is not None:
+            self.origen_y = data
+
+        data = ObtenerValor("data/blender.json", "opacidad")
+        if data is not None:
+            self.opacidad = data
 
         data = ObtenerValor("data/blender.json", "angulo")
         if data is not None:
@@ -107,15 +115,15 @@ class superinsertar(bpy.types.Operator):
             bpy.ops.sequencer.image_strip_add(
                 directory=FolderActual,
                 files=[{"name": Archivo, "name": Archivo}],
-                frame_start=FrameActual + Desface,
-                frame_end=FrameActual + Desface + Duracion,
+                frame_start=FrameActual + self.desface,
+                frame_end=FrameActual + self.desface + self.duracion,
                 channel=1,
             )
 
         elif Tipo in ("avi", "mp4", "mpg", "mpeg", "mov", "mkv", "dv", "flv"):
-            bpy.ops.sequencer.movie_strip_add(filepath=ClipActual, frame_start=FrameActual + Desface, channel=1)
+            bpy.ops.sequencer.movie_strip_add(filepath=ClipActual, frame_start=FrameActual + self.desface, channel=1)
         elif Tipo in ("acc", "ac3", "flac", "mp2", "mp3", "m4a", "pcm", "ogg"):
-            bpy.ops.sequencer.sound_strip_add(filepath=ClipActual, frame_start=FrameActual + Desface, channel=1)
+            bpy.ops.sequencer.sound_strip_add(filepath=ClipActual, frame_start=FrameActual + self.desface, channel=1)
         else:
             MostarMensajeBox("Formato no reconocido habla con ChepeCarlos", title="Error", icon="ERROR")
             return {"FINISHED"}
@@ -123,8 +131,8 @@ class superinsertar(bpy.types.Operator):
         for Secuencia in context.selected_sequences:
             if Secuencia.type == "SOUND":
                 Secuencia.show_waveform = True
-                if Volumen is not None:
-                    Secuencia.volume = Volumen
+                if self.volumen is not None:
+                    Secuencia.volume = self.volumen
             elif Secuencia.type == "IMAGE" or Secuencia.type == "MOVIE":
                 Secuencia.blend_type = "ALPHA_OVER"
                 Secuencia.transform.rotation = self.angulo * (pi / 180)

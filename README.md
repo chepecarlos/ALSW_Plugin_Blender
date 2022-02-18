@@ -16,12 +16,17 @@ Inserta clip en posicion de Cursor, ya sea Audio, Video o Imagen
 
 La ruta tiene que ser Absoluta
 
-| Nombre   | Atributo | Tipo       | Defaul    | Ejemplo         |
-| -------- | -------- | ---------- | --------- | --------------- |
-| Direcion | clip     | stl        | Requerido | /home/pollo.png |
-| Volumen  | volumen  | float (R+) | 1         | 1.2             |
-| Desface  | desface  | float      | 0         | -10             |
-| Duracion | duracion | float      | 60        | 10              |
+| Nombre     | Atributo   | Tipo       | Defaul    | Ejemplo         |
+| ---------- | ---------- | ---------- | --------- | --------------- |
+| Direction  | clip       | stl        | Requerido | /home/pollo.png |
+| Volumen    | volumen    | float (R+) | 1         | 1.2             |
+| Desfacé    | desface    | float      | 0         | -10             |
+| Duración   | duracion   | float      | 60        | 10              |
+| Posición X | posicion_x | int        | 0         | 300             |
+| Posición y | posicion_y | int        | 0         | 22              |
+| Origen X   | origen_x   | float      | 0.5       | 0,3             |
+| Origen Y   | origen_y   | float      | 0.5       | 0,3             |
+| Opacidad   | opacidad   | float      | 1         | 0.2             |
 
 Atajo de Teclado:
 

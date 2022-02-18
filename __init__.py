@@ -14,9 +14,9 @@ from .operaciones.zoon import superzoon
 bl_info = {
     "name": "ALSW_Plugin_Blender",
     "author": "ChepeCarlos",
-    "description": "Heramientas Extra para Sequencer",
+    "description": "Herramientas Extra para Sequencer",
     "blender": (2, 92, 0),
-    "version": (0, 0, 7),
+    "version": (0, 0, 8),
     "license": "GPL",
     "location": "Sequencer",
     "warning": "",
@@ -32,7 +32,7 @@ classes = [
     superindice,
     exportarextra,
     exportarindice,
-    mipanel.mi_PT_panel
+    mipanel.mi_PT_panel,
 ]
 
 

@@ -37,6 +37,9 @@ class superinsertar(bpy.types.Operator):
     origen_x: FloatProperty(name="oringe x", description="Origen x del Cip", default=0.5, min=0, max=1)
     origen_y: FloatProperty(name="oringe y", description="Origen y del Cip", default=0.5, min=0, max=1)
 
+    espejo_x: BoolProperty(name="espejo x", description="Espejo X del clip", default=False)
+    espejo_y: BoolProperty(name="espejo y", description="Espejo Y del clip", default=False)
+
     opacidad: FloatProperty(name="opacidad", description="Opacidad del clip", default=1, min=0, max=1)
 
     volumen: FloatProperty(name="volumen", description="Volumen de Audio", default=1, min=0)
@@ -75,6 +78,14 @@ class superinsertar(bpy.types.Operator):
         data = ObtenerValor("data/blender.json", "duracion")
         if data is not None:
             self.duracion = data
+
+        data = ObtenerValor("data/blender.json", "espejo_x")
+        if data is not None:
+            self.espejo_x = data
+
+        data = ObtenerValor("data/blender.json", "espejo_y")
+        if data is not None:
+            self.espejo_y = data
 
         data = ObtenerValor("data/blender.json", "posicion_x")
         if data is not None:
@@ -147,6 +158,8 @@ class superinsertar(bpy.types.Operator):
                 Secuencia.blend_alpha = self.opacidad
                 Secuencia.transform.origin[0] = self.origen_x
                 Secuencia.transform.origin[1] = self.origen_y
+                Secuencia.use_flip_x = self.espejo_x
+                Secuencia.use_flip_y = self.espejo_y
                 if self.escala != 0:
                     Secuencia.transform.scale_x = self.escala
                     Secuencia.transform.scale_y = self.escala

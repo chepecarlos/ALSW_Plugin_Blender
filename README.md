@@ -24,10 +24,11 @@ La ruta tiene que ser Absoluta
 | Duración   | duracion   | float      | false     | 60        | 10              |
 | Posición X | posicion_x | int        | false     | 0         | 300             |
 | Posición y | posicion_y | int        | false     | 0         | 22              |
-| Origen X   | origen_x   | float      | false     | 0.5       | 0,3             |
-| Origen Y   | origen_y   | float      | false     | 0.5       | 0,3             |
+| Origen X   | origen_x   | float      | false     | 0.5       | 0.3             |
+| Origen Y   | origen_y   | float      | false     | 0.5       | 0.3             |
 | Opacidad   | opacidad   | float      | false     | 1         | 0.2             |
 | Escala     | escala     | float      | false     |           | 3               |
+| Angulo     | angulo     | float      | false     | 0         | 30.5            |
 
 Atajo de Teclado:
 

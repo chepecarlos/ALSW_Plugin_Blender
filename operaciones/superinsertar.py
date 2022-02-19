@@ -32,7 +32,7 @@ class superinsertar(bpy.types.Operator):
     posicion_y: IntProperty(name="posición y", description="Posición y del clip", default=0)
     angulo: FloatProperty(name="angulo", description="Angulo del Cip", default=0, max=360)
 
-    escala: FloatProperty(name="angulo", description="Angulo del Cip", default=0, min=0)
+    escala: FloatProperty(name="escala", description="Escala del Cip", default=0, min=0)
 
     origen_x: FloatProperty(name="oringe x", description="Origen x del Cip", default=0.5, min=0, max=1)
     origen_y: FloatProperty(name="oringe y", description="Origen y del Cip", default=0.5, min=0, max=1)

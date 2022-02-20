@@ -1,15 +1,22 @@
 import bpy
 
+
 class mi_PT_panel(bpy.types.Panel):
     """Creates a Panel in the Object properties window."""
+
     bl_idname = "MY_PT_mipanel"
     bl_label = "Panel ALSW"
-    bl_space_type = 'SEQUENCE_EDITOR'
-    bl_region_type = 'UI'
+    bl_space_type = "SEQUENCE_EDITOR"
+    bl_region_type = "UI"
 
     def draw(self, context):
         """Dibujar el panel."""
         layout = self.layout
+
+        row = layout.row()
+        row.label(text="Poder Hueva")
+        row = layout.row()
+        ops = row.operator("scene.hueva", text="Hueva")
 
         row = layout.row()
         row.label(text="Musica sobre clip", icon="SOUND")
@@ -82,12 +89,12 @@ class mi_PT_panel(bpy.types.Panel):
         row.label(text="Generador Indice")
         row = layout.row()
         ops = row.operator("scene.superindice", text="Generar")
-        
+
         row = layout.row()
         row.label(text="Indice para NocheProgramacion")
         row = layout.row()
         ops = row.operator("scene.exportarindice", text="Copiar")
-        
+
         row = layout.row()
         row.label(text="Exportar Markas Extras")
 
@@ -98,7 +105,7 @@ class mi_PT_panel(bpy.types.Panel):
         ops.prefijo = "tarjeta"
         ops = row.operator("scene.exportarextra", text="Videos")
         ops.prefijo = "video"
-        
+
         row = layout.row()
         ops = row.operator("scene.exportarextra", text="Ads")
         ops.prefijo = "ads"

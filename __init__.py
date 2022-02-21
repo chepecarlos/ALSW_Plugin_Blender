@@ -11,6 +11,7 @@ from .operaciones.indice import superindice
 from .operaciones.macros import add_hotkey, remove_hotkey
 from .operaciones.mover import moverclip
 from .operaciones.sobreponeraudio import sobreponeraudio
+from .operaciones.subtitulos import subtitulo
 from .operaciones.superinsertar import superinsertar
 from .operaciones.zoon import superzoon
 
@@ -36,6 +37,7 @@ classes = [
     exportarextra,
     exportarindice,
     hueva,
+    subtitulo,
     mipanel.mi_PT_panel,
 ]
 

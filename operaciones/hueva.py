@@ -29,6 +29,6 @@ class hueva(bpy.types.Operator):
 
         bpy.context.window_manager.clipboard = f"{time.strftime(formatoTiempo)}+{extra} - {FrameActual} "
 
-        self.report({"INFO"}, f"Cursor en {time.strftime(formatoTiempo)} - {FrameActual}")
+        self.report({"INFO"}, f"Cursor en {time.strftime(formatoTiempo)}+{extra} - {FrameActual}")
 
         return {"FINISHED"}

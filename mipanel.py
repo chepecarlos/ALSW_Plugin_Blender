@@ -14,9 +14,12 @@ class mi_PT_panel(bpy.types.Panel):
         layout = self.layout
 
         row = layout.row()
-        row.label(text="Poder Hueva")
-        row = layout.row()
+        row.label(text="Poder")
         ops = row.operator("scene.hueva", text="Hueva")
+
+        row = layout.row()
+        row.label(text="Subtítulos")
+        ops = row.operator("scene.subtitulo", text="Agregar")
 
         row = layout.row()
         row.label(text="Musica sobre clip", icon="SOUND")

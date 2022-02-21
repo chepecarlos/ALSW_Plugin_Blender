@@ -30,9 +30,9 @@ class subtitulo(bpy.types.Operator):
 
         folder = os.path.dirname(bpy.data.filepath)
 
-        archivoSutitulo = os.path.join(folder, "subtitulo.csv")
+        archivoSubtitulo = os.path.join(folder, "subtitulo.csv")
 
-        if not os.path.exists(archivoSutitulo):
+        if not os.path.exists(archivoSubtitulo):
             self.report({"INFO"}, f"No Existe el archivo subtitulos.csv")
             return {"FINISHED"}
 
@@ -62,14 +62,21 @@ class subtitulo(bpy.types.Operator):
             if Titulo.startswith(prefijo):
                 seq.sequences.remove(secuencia)
 
-        with open(archivoSutitulo) as dataSubtitulos:
-            dataCSV = csv.reader(dataSubtitulos, delimiter=",")
-            for lineas in dataCSV:
+        with open(archivoSubtitulo) as dataSubtitulo:
+            dataCSV = csv.reader(dataSubtitulo, delimiter=",")
+            listaLineas = []
+            for linea in dataCSV:
+                listaLineas.append(linea)
+
+            for id, linea in enumerate(listaLineas[:-1]):
+                listaLineas[id][1] = listaLineas[id + 1][0]
+
+            for lineas in listaLineas:
                 inicio = trasformarFrame(lineas[0], framerate)
                 Final = trasformarFrame(lineas[1], framerate)
                 Mensaje = lineas[2]
 
-                bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=inicio, frame_end=Final, channel=4)
+                bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=inicio, frame_end=Final, channel=5)
 
                 clipActual = context.selected_sequences[0]
                 clipActual.name = f"{prefijo}{Mensaje}"
@@ -78,13 +85,13 @@ class subtitulo(bpy.types.Operator):
                 clipActual.use_box = True
                 clipActual.align_x = "LEFT"
                 clipActual.align_y = "TOP"
-                # Incompatible con verciones viejas de blender
                 clipActual.use_bold = True
 
                 clipActual.location = (x, y)
                 clipActual.color = t_color
                 clipActual.wrap_width = 1
                 clipActual.box_color = f_color
+                clipActual.color_tag = "COLOR_08"
 
                 self.report({"INFO"}, f"Inicio: {inicio} Final: {Final} Mensaje: {Mensaje}")
 

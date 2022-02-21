@@ -1,12 +1,7 @@
-import bpy
-
-from bpy.props import (
-    BoolProperty,
-    FloatProperty,
-    EnumProperty,
-    IntProperty,
-)
 from operator import attrgetter
+
+import bpy
+from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty
 
 from .FuncionesArchivos import ObtenerValor, SalvarValor
 
@@ -17,13 +12,7 @@ class superindice(bpy.types.Operator):
     bl_description = "Agrega Markas como Texto en el video"
     bl_options = {"REGISTER", "UNDO"}
 
-    Duracion: FloatProperty(
-        name="duracion",
-        description="duracion indice",
-        default=1,
-        min=0
-    )
-
+    Duracion: FloatProperty(name="duracion", description="duracion indice", default=1, min=0)
 
     @classmethod
     def poll(cls, context):
@@ -37,13 +26,12 @@ class superindice(bpy.types.Operator):
         secuencias = seq.sequences_all
 
         if indices is None:
-            return{'CANCELLED'}
+            return {"CANCELLED"}
         render = context.scene.render
 
         framerate = render.fps / render.fps_base
 
-        self.Duracion = ObtenerValor(
-            "data/blender.json", "indice_duracion") * framerate
+        self.Duracion = ObtenerValor("data/blender.json", "indice_duracion") * framerate
         # self.movimiento_vertical = fade_duracion
         indice_tamanno = ObtenerValor("data/blender.json", "indice_tamanno")
         indice_x = ObtenerValor("data/blender.json", "indice_x")
@@ -52,27 +40,17 @@ class superindice(bpy.types.Operator):
         fade_duracion = ObtenerValor("data/blender.json", "fade_duracion")
         fade_mode = ObtenerValor("data/blender.json", "fade_mode")
 
-        indice_texto_rojo = ObtenerValor(
-            "data/blender.json", "indice_texto_rojo")
-        indice_texto_azul = ObtenerValor(
-            "data/blender.json", "indice_texto_azul")
-        indice_texto_verde = ObtenerValor(
-            "data/blender.json", "indice_texto_verde")
-        indice_texto_alpha = ObtenerValor(
-            "data/blender.json", "indice_texto_alpha")
-        color_texto = (indice_texto_rojo, indice_texto_verde,
-                       indice_texto_azul, indice_texto_alpha)
+        indice_texto_rojo = ObtenerValor("data/blender.json", "indice_texto_rojo")
+        indice_texto_azul = ObtenerValor("data/blender.json", "indice_texto_azul")
+        indice_texto_verde = ObtenerValor("data/blender.json", "indice_texto_verde")
+        indice_texto_alpha = ObtenerValor("data/blender.json", "indice_texto_alpha")
+        color_texto = (indice_texto_rojo, indice_texto_verde, indice_texto_azul, indice_texto_alpha)
 
-        indice_box_rojo = ObtenerValor(
-            "data/blender.json", "indice_box_rojo")
-        indice_box_azul = ObtenerValor(
-            "data/blender.json", "indice_box_azul")
-        indice_box_verde = ObtenerValor(
-            "data/blender.json", "indice_box_verde")
-        indice_box_alpha = ObtenerValor(
-            "data/blender.json", "indice_box_alpha")
-        color_box = (indice_box_rojo, indice_box_verde,
-                     indice_box_azul, indice_box_alpha)
+        indice_box_rojo = ObtenerValor("data/blender.json", "indice_box_rojo")
+        indice_box_azul = ObtenerValor("data/blender.json", "indice_box_azul")
+        indice_box_verde = ObtenerValor("data/blender.json", "indice_box_verde")
+        indice_box_alpha = ObtenerValor("data/blender.json", "indice_box_alpha")
+        color_box = (indice_box_rojo, indice_box_verde, indice_box_azul, indice_box_alpha)
 
         indices = sorted(indices, key=attrgetter("frame"))
         indices = indices[1:]
@@ -83,28 +61,28 @@ class superindice(bpy.types.Operator):
             if Titulo.startswith(prefiji):
                 seq.sequences.remove(secuencia)
 
-
         for indice in indices:
             Titulo = indice.name
             if not Titulo.startswith(">"):
                 frame = indice.frame
-                # TODO: Buscar el ultimo canal usado por los clips 
+                # TODO: Buscar el ultimo canal usado por los clips
                 bpy.ops.sequencer.effect_strip_add(
-                    type='TEXT', frame_start=frame, frame_end=frame+self.Duracion, channel=4)
+                    type="TEXT", frame_start=frame, frame_end=frame + self.Duracion, channel=4
+                )
                 clipActual = context.selected_sequences[0]
                 clipActual.name = f"{prefiji}{Titulo}"
                 clipActual.text = Titulo
                 clipActual.font_size = indice_tamanno
                 clipActual.use_box = True
-                clipActual.align_x = 'LEFT'
-                clipActual.align_y = 'TOP'
+                clipActual.align_x = "LEFT"
+                clipActual.align_y = "TOP"
                 # Incompatible con verciones viejas de blender
-                # clipActual.use_bold = True 
+                # clipActual.use_bold = True
                 clipActual.location = (indice_x, indice_y)
                 clipActual.color = color_texto
                 clipActual.wrap_width = 1
                 clipActual.box_color = color_box
+                clipActual.color_tag = "COLOR_06"
                 bpy.ops.sequencer.fades_add(duration_seconds=fade_duracion, type=fade_mode)
-
 
         return {"FINISHED"}

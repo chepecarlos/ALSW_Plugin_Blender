@@ -39,6 +39,10 @@ class subtitulo(bpy.types.Operator):
         archivoData = "data/blender_subtitulo.json"
         x = ObtenerValor(archivoData, "x")
         y = ObtenerValor(archivoData, "y")
+
+        x_aliniacion = ObtenerValor(archivoData, "x_aliniacion")
+        y_aliniacion = ObtenerValor(archivoData, "x_aliniacion")
+
         tamanno = ObtenerValor(archivoData, "tamanno")
 
         t_rojo = ObtenerValor(archivoData, "t_rojo")
@@ -88,8 +92,8 @@ class subtitulo(bpy.types.Operator):
                 clipActual.text = Mensaje
                 clipActual.font_size = tamanno
                 clipActual.use_box = True
-                clipActual.align_x = "LEFT"
-                clipActual.align_y = "TOP"
+                clipActual.align_x = x_aliniacion
+                clipActual.align_y = y_aliniacion
                 clipActual.use_bold = True
 
                 clipActual.location = (x, y)

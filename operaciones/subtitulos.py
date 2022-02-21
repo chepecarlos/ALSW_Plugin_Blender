@@ -68,12 +68,17 @@ class subtitulo(bpy.types.Operator):
             for linea in dataCSV:
                 listaLineas.append(linea)
 
+            for linea in listaLineas:
+                linea[0] = trasformarFrame(linea[0], framerate)
+                linea[1] = trasformarFrame(linea[1], framerate)
+
             for id, linea in enumerate(listaLineas[:-1]):
-                listaLineas[id][1] = listaLineas[id + 1][0]
+                if listaLineas[id][1] > listaLineas[id + 1][0]:
+                    listaLineas[id][1] = listaLineas[id + 1][0]
 
             for lineas in listaLineas:
-                inicio = trasformarFrame(lineas[0], framerate)
-                Final = trasformarFrame(lineas[1], framerate)
+                inicio = lineas[0]
+                Final = lineas[1]
                 Mensaje = lineas[2]
 
                 bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=inicio, frame_end=Final, channel=5)

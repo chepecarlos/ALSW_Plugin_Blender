@@ -14,7 +14,8 @@ from .operaciones.sobreponeraudio import sobreponeraudio
 from .operaciones.subtitulos import subtitulo
 from .operaciones.superinsertar import superinsertar
 from .operaciones.zoon import superzoon
-
+from .operaciones.autoanotar import autoanotar
+ 
 bl_info = {
     "name": "ALSW_Plugin_Blender",
     "author": "ChepeCarlos",
@@ -38,6 +39,7 @@ classes = [
     exportarindice,
     hueva,
     subtitulo,
+    autoanotar,
     mipanel.mi_PT_panel,
 ]
 

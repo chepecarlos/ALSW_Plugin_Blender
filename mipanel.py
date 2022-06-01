@@ -14,6 +14,10 @@ class mi_PT_panel(bpy.types.Panel):
         layout = self.layout
 
         row = layout.row()
+        row.label(text="AutoAnotacion")
+        ops = row.operator("scene.autoanotar", text="Insertar")
+
+        row = layout.row()
         row.label(text="Poder")
         ops = row.operator("scene.hueva", text="Hueva")
 

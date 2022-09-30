@@ -61,13 +61,14 @@ class superindice(bpy.types.Operator):
             if Titulo.startswith(prefiji):
                 seq.sequences.remove(secuencia)
 
+        self.Duracion = int(self.Duracion)
         for indice in indices:
             Titulo = indice.name
             if not Titulo.startswith(">"):
                 frame = indice.frame
                 # TODO: Buscar el ultimo canal usado por los clips
                 bpy.ops.sequencer.effect_strip_add(
-                    type="TEXT", frame_start=frame, frame_end=frame + self.Duracion, channel=4
+                    type="TEXT", frame_start=frame, frame_end=int(frame + self.Duracion), channel=10
                 )
                 clipActual = context.selected_sequences[0]
                 clipActual.name = f"{prefiji}{Titulo}"

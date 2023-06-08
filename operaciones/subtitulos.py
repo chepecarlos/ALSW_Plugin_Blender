@@ -16,7 +16,8 @@ class subtitulo(bpy.types.Operator):
     def poll(cls, context):
         folder = os.path.dirname(bpy.data.filepath)
 
-        archivoSutitulo = os.path.join(folder, "subtitulo.csv")
+        # archivoSutitulo = os.path.join(folder, "subtitulo.csv")
+        archivoSutitulo = os.path.join(folder, "subtitulo.sbv")
 
         return os.path.exists(archivoSutitulo)
 
@@ -26,14 +27,15 @@ class subtitulo(bpy.types.Operator):
         seq = scene.sequence_editor
         secuencias = seq.sequences_all
         render = context.scene.render
+        final = context.scene.frame_end
         framerate = render.fps / render.fps_base
 
         folder = os.path.dirname(bpy.data.filepath)
 
-        archivoSubtitulo = os.path.join(folder, "subtitulo.csv")
+        archivoSubtitulo = os.path.join(folder, "subtitulo.sbv")
 
         if not os.path.exists(archivoSubtitulo):
-            self.report({"INFO"}, f"No Existe el archivo subtitulos.csv")
+            self.report({"INFO"}, f"No Existe el archivo subtitulos.sbv")
             return {"FINISHED"}
 
         archivoData = "data/blender_subtitulo.json"
@@ -66,43 +68,62 @@ class subtitulo(bpy.types.Operator):
             if Titulo.startswith(prefijo):
                 seq.sequences.remove(secuencia)
 
+        inicios = []
+        finales = []
+        mensajes = []
+
         with open(archivoSubtitulo) as dataSubtitulo:
-            dataCSV = csv.reader(dataSubtitulo, delimiter=",")
-            listaLineas = []
-            for linea in dataCSV:
-                listaLineas.append(linea)
+            lineas = dataSubtitulo.read()
+            lineas = lineas.splitlines()
+            for linea in lineas:
+                if linea == "":
+                    continue
+                elif "," in linea:
+                    numeros = linea.split(",")
+                    inicios.append(trasformarFrame(numeros[0], framerate))
+                    finales.append(trasformarFrame(numeros[1], framerate))
+                    continue
+                else:
+                    mensajes.append(linea)
 
-            for linea in listaLineas:
-                linea[0] = trasformarFrame(linea[0], framerate)
-                linea[1] = trasformarFrame(linea[1], framerate)
+        for id, mensaje in enumerate(mensajes[:-1]):
+            if finales[id] > inicios[id + 1]:
+                finales[id] = inicios[id + 1] - 5
 
-            for id, linea in enumerate(listaLineas[:-1]):
-                if listaLineas[id][1] > listaLineas[id + 1][0]:
-                    listaLineas[id][1] = listaLineas[id + 1][0]
+        if finales[-1] > final:
+            finales[-1] = final
 
-            for lineas in listaLineas:
-                inicio = lineas[0]
-                Final = lineas[1]
-                Mensaje = lineas[2]
+        inicios[0] = 1
 
-                bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=inicio, frame_end=Final, channel=5)
+        self.report({"INFO"}, f"cantidad-{len(inicios)}- {framerate}")
 
-                clipActual = context.selected_sequences[0]
-                clipActual.name = f"{prefijo}{Mensaje}"
-                clipActual.text = Mensaje
-                clipActual.font_size = tamanno
-                clipActual.use_box = True
-                clipActual.align_x = x_aliniacion
-                clipActual.align_y = y_aliniacion
-                clipActual.use_bold = True
+        for id, mensaje in enumerate(mensajes):
+            inicio = inicios[id]
+            final = finales[id]
+            mensaje = mensajes[id]
 
-                clipActual.location = (x, y)
-                clipActual.color = t_color
-                clipActual.wrap_width = 1
-                clipActual.box_color = f_color
-                clipActual.color_tag = "COLOR_08"
+            self.report({"INFO"}, f"mensaje-{id} {inicio}-{final} {mensaje}")
 
-                self.report({"INFO"}, f"Inicio: {inicio} Final: {Final} Mensaje: {Mensaje}")
+            bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=inicio, frame_end=final, channel=5)
+
+            clipActual = context.selected_sequences[0]
+            clipActual.name = f"{prefijo}{mensaje}"
+            clipActual.text = mensaje
+            # clipActual.font_size = tamanno
+            clipActual.font_size = 60
+
+            clipActual.use_box = True
+            clipActual.align_x = x_aliniacion
+            clipActual.align_y = y_aliniacion
+            clipActual.use_bold = True
+
+            clipActual.location = (x, y)
+            clipActual.color = t_color
+            clipActual.wrap_width = 1
+            clipActual.box_color = f_color
+            clipActual.box_margin = 0.03
+
+            clipActual.color_tag = "COLOR_08"
 
         self.report({"INFO"}, f"Folder actual {folder}")
 

@@ -109,8 +109,7 @@ class subtitulo(bpy.types.Operator):
             clipActual = context.selected_sequences[0]
             clipActual.name = f"{prefijo}{mensaje}"
             clipActual.text = mensaje
-            # clipActual.font_size = tamanno
-            clipActual.font_size = 60
+            clipActual.font_size = tamanno
 
             clipActual.use_box = True
             clipActual.align_x = x_aliniacion

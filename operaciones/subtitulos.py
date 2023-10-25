@@ -9,7 +9,7 @@ from .FuncionesArchivos import ObtenerValor
 class subtitulo(bpy.types.Operator):
     bl_idname = "scene.subtitulo"
     bl_label = "Subtitulo"
-    bl_description = "Inserta los Subtítulos desde un archivo .csv"
+    bl_description = "Inserta los Subtítulos desde un archivo subtitulo.sbv"
     bl_options = {"REGISTER", "UNDO"}
 
     @classmethod

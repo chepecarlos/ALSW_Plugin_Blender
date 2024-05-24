@@ -3,7 +3,7 @@ import os
 
 import bpy
 
-from .FuncionesArchivos import ObtenerValor
+from .FuncionesArchivos import ObtenerArchivo
 
 
 class subtitulo(bpy.types.Operator):
@@ -15,8 +15,7 @@ class subtitulo(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         folder = os.path.dirname(bpy.data.filepath)
-
-        # archivoSutitulo = os.path.join(folder, "subtitulo.csv")
+        # TODO: usar el archivo .sbs si existe
         archivoSutitulo = os.path.join(folder, "subtitulo.sbv")
 
         return os.path.exists(archivoSutitulo)
@@ -39,25 +38,28 @@ class subtitulo(bpy.types.Operator):
             return {"FINISHED"}
 
         archivoData = "data/blender_subtitulo.json"
-        x = ObtenerValor(archivoData, "x")
-        y = ObtenerValor(archivoData, "y")
+        dataArchivo = ObtenerArchivo(archivoData)
+        x = dataArchivo.get("x", 0.5)
+        y = dataArchivo.get("y", 0.5)
 
-        x_aliniacion = ObtenerValor(archivoData, "x_aliniacion")
-        y_aliniacion = ObtenerValor(archivoData, "x_aliniacion")
+        x_aliniacion = dataArchivo.get("x_aliniacion", "CENTER")
+        y_aliniacion = dataArchivo.get("y_aliniacion", "TOP")
 
-        tamanno = ObtenerValor(archivoData, "tamanno")
+        tamanno = dataArchivo.get("tamanno", 60)
 
-        t_rojo = ObtenerValor(archivoData, "t_rojo")
-        t_verde = ObtenerValor(archivoData, "t_verde")
-        t_azul = ObtenerValor(archivoData, "t_azul")
-        t_alfa = ObtenerValor(archivoData, "t_alfa")
+        t_rojo = dataArchivo.get("t_rojo", 1)
+        t_verde = dataArchivo.get("t_verde", 1)
+        t_azul = dataArchivo.get("t_azul", 1)
+        t_alfa = dataArchivo.get("t_alfa", 1)
 
         t_color = (t_rojo, t_verde, t_azul, t_alfa)
 
-        f_rojo = ObtenerValor(archivoData, "f_rojo")
-        f_verde = ObtenerValor(archivoData, "f_verde")
-        f_azul = ObtenerValor(archivoData, "f_azul")
-        f_alfa = ObtenerValor(archivoData, "f_alfa")
+        f_rojo = dataArchivo.get("f_rojo", 0)
+        f_verde = dataArchivo.get("f_verde", 0)
+        f_azul = dataArchivo.get("f_azul", 0)
+        f_alfa = dataArchivo.get("f_alfa", 0.7)
+        
+        canal = dataArchivo.get("canal", 10)
 
         f_color = (f_rojo, f_verde, f_azul, f_alfa)
 
@@ -80,6 +82,7 @@ class subtitulo(bpy.types.Operator):
                     continue
                 elif "," in linea:
                     numeros = linea.split(",")
+                    # TODo erro si un numero incluye coma
                     inicios.append(trasformarFrame(numeros[0], framerate))
                     finales.append(trasformarFrame(numeros[1], framerate))
                     continue
@@ -95,16 +98,16 @@ class subtitulo(bpy.types.Operator):
 
         inicios[0] = 1
 
-        self.report({"INFO"}, f"cantidad-{len(inicios)}- {framerate}")
+        self.report({"INFO"}, f"Cantidad Sub {len(inicios)} - fps:{framerate}")
 
         for id, mensaje in enumerate(mensajes):
-            inicio = inicios[id]
-            final = finales[id]
+            inicio = int(inicios[id])
+            final = int(finales[id])
             mensaje = mensajes[id]
 
-            self.report({"INFO"}, f"mensaje-{id} {inicio}-{final} {mensaje}")
+            self.report({"INFO"}, f"mensaje-{id} {inicio}-{final} \"{mensaje}\"")
 
-            bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=inicio, frame_end=final, channel=5)
+            bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=int(inicio), frame_end=int(final), channel=canal)
 
             clipActual = context.selected_sequences[0]
             clipActual.name = f"{prefijo}{mensaje}"
@@ -130,5 +133,6 @@ class subtitulo(bpy.types.Operator):
 
 
 def trasformarFrame(tiempo, frame):
+
     h, m, s = tiempo.split(":")
     return int((int(h) * 3600 + int(m) * 60 + float(s)) * frame)

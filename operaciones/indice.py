@@ -31,7 +31,7 @@ class superindice(bpy.types.Operator):
 
         framerate = render.fps / render.fps_base
 
-        self.Duracion = ObtenerValor("data/blender.json", "indice_duracion") * framerate
+        self.Duracion = int(ObtenerValor("data/blender.json", "indice_duracion") * framerate)
         # self.movimiento_vertical = fade_duracion
         indice_tamanno = ObtenerValor("data/blender.json", "indice_tamanno")
         indice_x = ObtenerValor("data/blender.json", "indice_x")
@@ -61,14 +61,14 @@ class superindice(bpy.types.Operator):
             if Titulo.startswith(prefiji):
                 seq.sequences.remove(secuencia)
 
-        self.Duracion = int(self.Duracion)
+        # self.Duracion = int(self.Duracion)
         for indice in indices:
             Titulo = indice.name
             if not Titulo.startswith(">"):
                 frame = indice.frame
                 # TODO: Buscar el ultimo canal usado por los clips
                 bpy.ops.sequencer.effect_strip_add(
-                    type="TEXT", frame_start=frame, frame_end=int(frame + self.Duracion), channel=10
+                    type="TEXT", frame_start=frame, frame_end=int(frame + self.Duracion), channel=1
                 )
                 clipActual = context.selected_sequences[0]
                 clipActual.name = f"{prefiji}{Titulo}"

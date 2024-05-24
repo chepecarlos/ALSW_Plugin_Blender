@@ -1,14 +1,8 @@
 import bpy
+from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty
 
-from bpy.props import (
-    BoolProperty,
-    FloatProperty,
-    EnumProperty,
-    IntProperty,
-)
-
-from .FuncionesArchivos import ObtenerValor, SalvarValor
 from .extras import MostarMensajeBox
+from .FuncionesArchivos import ObtenerValor, SalvarValor
 
 
 class moverclip(bpy.types.Operator):
@@ -17,24 +11,14 @@ class moverclip(bpy.types.Operator):
     bl_description = "mover clip en una direcion"
     bl_options = {"REGISTER", "UNDO"}
 
-    macros: BoolProperty(
-        name="macro",
-        description="funcion con macro para alinacion",
-        default=False
-    )
+    macros: BoolProperty(name="macro", description="funcion con macro para alinacion", default=False)
 
     movimiento_horizontal: FloatProperty(
-        name="movimiento_horizontal",
-        description="zoon para clip",
-        default=1,
-        min=-10, max=10
+        name="movimiento_horizontal", description="zoon para clip", default=1, min=-10, max=10
     )
 
     movimiento_vertical: FloatProperty(
-        name="movimiento_vertical",
-        description="zoon para clip",
-        default=1,
-        min=-10, max=10
+        name="movimiento_vertical", description="zoon para clip", default=1, min=-10, max=10
     )
 
     # Verifica que este alguna secuencia selecionada
@@ -57,10 +41,8 @@ class moverclip(bpy.types.Operator):
             movimiento_horizontal = self.movimiento_horizontal
             movimiento_vertical = self.movimiento_vertical
             if self.macros:
-                movimiento_horizontal = ObtenerValor(
-                    "data/blender.json", "movimiento_horizontal")
-                movimiento_vertical = ObtenerValor(
-                    "data/blender.json", "movimiento_vertical")
+                movimiento_horizontal = ObtenerValor("data/blender.json", "movimiento_horizontal")
+                movimiento_vertical = ObtenerValor("data/blender.json", "movimiento_vertical")
                 if movimiento_horizontal is None:
                     movimiento_horizontal = 0
                 if movimiento_vertical is None:
@@ -76,4 +58,4 @@ class moverclip(bpy.types.Operator):
             SalvarValor("data/blender.json", "movimiento_horizontal", None)
             SalvarValor("data/blender.json", "movimiento_vertical", None)
 
-        return{'FINISHED'}
+        return {"FINISHED"}

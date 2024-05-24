@@ -2,6 +2,15 @@
 
 Plubin para ser mas feliz editando con atajos o macros que te ayudara a editar mas rapido
 
+# informacion 
+
+archivos de config en 
+.config/pluginBlenderALSW
+
+## subtitulos
+
+blender_subtitulo.json
+
 ## Configurar
 
 Los Atributos se guarda dentro de folder (~/.config/elgatoalsw-cli) para conbinar con proyecto [ElGatoALSW](https://github.com/chepecarlos/ElGatoALSW) de Macros, el archivo donde se guardan los atribuos es (data/blender.json)

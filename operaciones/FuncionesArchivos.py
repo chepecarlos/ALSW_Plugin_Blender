@@ -9,7 +9,7 @@ from pathlib import Path
 
 def ObtenerFolderConfig():
     """Devuelte ruta donde esta el folder de configuracion."""
-    Folder = UnirPath(Path.home(), '.config/elgatoalsw-cli')
+    Folder = UnirPath(Path.home(), '.config/pluginBlenderALSW')
 
     return Folder
 

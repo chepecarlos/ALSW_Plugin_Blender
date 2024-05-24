@@ -79,8 +79,9 @@ class exportarextra(bpy.types.Operator):
                 Prefijo = ">R "
             elif self.prefijo == "notas":
                 Prefijo = ">N "
+            Prefijo = Prefijo.lower()
 
-            if Titulo.startswith(Prefijo) and not Encontrado:
+            if Titulo.lower().startswith(Prefijo) and not Encontrado:
 
                 time = dt.datetime(year=1, month=1, day=1) + dt.timedelta(
                     seconds=(marker.frame - PrimerIndice) / framerate

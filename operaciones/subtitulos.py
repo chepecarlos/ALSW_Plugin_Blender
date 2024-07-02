@@ -34,11 +34,12 @@ class subtitulo(bpy.types.Operator):
         archivoSubtitulo = os.path.join(folder, "subtitulo.sbv")
 
         if not os.path.exists(archivoSubtitulo):
-            self.report({"INFO"}, f"No Existe el archivo subtitulos.sbv")
+            self.report({"INFO"}, f"No Existe el archivo subtitulo.sbv")
             return {"FINISHED"}
 
         archivoData = "data/blender_subtitulo.json"
         dataArchivo = ObtenerArchivo(archivoData)
+        # TODO: erro si no encuentra blender subtitulo
         x = dataArchivo.get("x", 0.5)
         y = dataArchivo.get("y", 0.5)
 
@@ -58,7 +59,7 @@ class subtitulo(bpy.types.Operator):
         f_verde = dataArchivo.get("f_verde", 0)
         f_azul = dataArchivo.get("f_azul", 0)
         f_alfa = dataArchivo.get("f_alfa", 0.7)
-        
+
         canal = dataArchivo.get("canal", 10)
 
         f_color = (f_rojo, f_verde, f_azul, f_alfa)
@@ -78,6 +79,7 @@ class subtitulo(bpy.types.Operator):
             lineas = dataSubtitulo.read()
             lineas = lineas.splitlines()
             for linea in lineas:
+                linea = linea.strip()
                 if linea == "":
                     continue
                 elif "," in linea:
@@ -105,9 +107,11 @@ class subtitulo(bpy.types.Operator):
             final = int(finales[id])
             mensaje = mensajes[id]
 
-            self.report({"INFO"}, f"mensaje-{id} {inicio}-{final} \"{mensaje}\"")
+            self.report(
+                {"INFO"}, f"mensaje-{id} {inicio}-{final} \"{mensaje}\"")
 
-            bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=int(inicio), frame_end=int(final), channel=canal)
+            bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=int(
+                inicio), frame_end=int(final), channel=canal)
 
             clipActual = context.selected_sequences[0]
             clipActual.name = f"{prefijo}{mensaje}"

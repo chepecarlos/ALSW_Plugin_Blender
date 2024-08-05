@@ -39,6 +39,11 @@ class subtitulo(bpy.types.Operator):
 
         archivoData = "data/blender_subtitulo.json"
         dataArchivo = ObtenerArchivo(archivoData)
+        
+        if dataArchivo is None:
+            self.report({"INFO"}, f"No se encontró el archivo Sub .config/pluginBlenderALSW/data/blender_subtitulo.jso")
+            dataArchivo = dict()
+        
         # TODO: erro si no encuentra blender subtitulo
         x = dataArchivo.get("x", 0.5)
         y = dataArchivo.get("y", 0.5)

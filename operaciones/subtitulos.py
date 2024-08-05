@@ -39,12 +39,12 @@ class subtitulo(bpy.types.Operator):
 
         archivoData = "data/blender_subtitulo.json"
         dataArchivo = ObtenerArchivo(archivoData)
-        
+
         if dataArchivo is None:
-            self.report({"INFO"}, f"No se encontró el archivo Sub .config/pluginBlenderALSW/data/blender_subtitulo.jso")
+            self.report(
+                {"INFO"}, f"No se encontró el archivo Sub .config/pluginBlenderALSW/data/blender_subtitulo.jso")
             dataArchivo = dict()
-        
-        # TODO: erro si no encuentra blender subtitulo
+
         x = dataArchivo.get("x", 0.5)
         y = dataArchivo.get("y", 0.5)
 
@@ -64,10 +64,22 @@ class subtitulo(bpy.types.Operator):
         f_verde = dataArchivo.get("f_verde", 0)
         f_azul = dataArchivo.get("f_azul", 0)
         f_alfa = dataArchivo.get("f_alfa", 0.7)
+        f_grosor = dataArchivo.get("f_grosor", 0.03)
+
+        f_color = (f_rojo, f_verde, f_azul, f_alfa)
+
+        b_rojo = dataArchivo.get("b_rojo", 0)
+        b_verde = dataArchivo.get("b_verde", 0)
+        b_azul = dataArchivo.get("b_azul", 0)
+        b_alfa = dataArchivo.get("b_alfa", 0.7)
+        b_grosor = dataArchivo.get("b_grosor", 0.6)
+
+        b_color = (b_rojo, b_verde, b_azul, b_alfa)
 
         canal = dataArchivo.get("canal", 10)
 
-        f_color = (f_rojo, f_verde, f_azul, f_alfa)
+        caja = dataArchivo.get("caja", False)
+        borde = dataArchivo.get("borde", False)
 
         prefijo = "subtitulo."
 
@@ -123,7 +135,6 @@ class subtitulo(bpy.types.Operator):
             clipActual.text = mensaje
             clipActual.font_size = tamanno
 
-            clipActual.use_box = True
             clipActual.align_x = x_aliniacion
             clipActual.align_y = y_aliniacion
             clipActual.use_bold = True
@@ -131,8 +142,16 @@ class subtitulo(bpy.types.Operator):
             clipActual.location = (x, y)
             clipActual.color = t_color
             clipActual.wrap_width = 1
-            clipActual.box_color = f_color
-            clipActual.box_margin = 0.03
+
+            if caja:
+                clipActual.use_box = True
+                clipActual.box_color = f_color
+                clipActual.box_margin = f_grosor
+
+            if borde:
+                clipActual.use_outline = True
+                clipActual.box_color = b_color
+                clipActual.outline_width = b_grosor
 
             clipActual.color_tag = "COLOR_08"
 

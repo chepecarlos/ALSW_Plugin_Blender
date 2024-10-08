@@ -15,13 +15,14 @@ from .operaciones.subtitulos import subtitulo
 from .operaciones.superinsertar import superinsertar
 from .operaciones.zoon import superzoon
 from .operaciones.autoanotar import autoanotar
+from .operaciones.superAnimar import superanimar
  
 bl_info = {
     "name": "ALSW_Plugin_Blender",
     "author": "ChepeCarlos",
     "description": "Herramientas Extra para Sequencer",
     "blender": (2, 92, 0),
-    "version": (0, 0, 9),
+    "version": (0, 1, 0),
     "license": "GPL",
     "location": "Sequencer",
     "warning": "",
@@ -40,6 +41,7 @@ classes = [
     hueva,
     subtitulo,
     autoanotar,
+    superanimar,
     mipanel.mi_PT_panel,
 ]
 

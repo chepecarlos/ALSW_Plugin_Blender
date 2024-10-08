@@ -11,6 +11,8 @@ def add_hotkey():
 
     kmi = km.keymap_items.new("scene.superinsertar", type="Y", value="PRESS", ctrl=True, shift=True)
     kmi.properties.macros = True
+    
+    kmi = km.keymap_items.new("scene.superanimar", type="Q", value="PRESS", ctrl=True, shift=True)
 
     kmi = km.keymap_items.new("scene.sobreponeraudio", "O", "PRESS", ctrl=True, shift=True)
     kmi.properties.macros = True

@@ -1,4 +1,7 @@
 {
+  "isort.args": ["--profile", "black"],
+  "black-formatter.args": ["--line-length=200"],
+  "autopep8.args": ["--max-line-length", "180"],
   "workbench.colorCustomizations": {
     "activityBar.background": "#ba6403"
   }

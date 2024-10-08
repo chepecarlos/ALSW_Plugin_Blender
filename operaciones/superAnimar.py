@@ -19,22 +19,21 @@ class superanimar(bpy.types.Operator):
 
         render = context.scene.render
         framerate = render.fps / render.fps_base
+        frameCursor = context.scene.frame_current
 
         self.report({"INFO"}, f"Insertando Animación")
         dataAnimación = ObtenerArchivo("data/animar.json")
 
         if dataAnimación is None:
-            self.report(
-                {"INFO"}, f"No informacion de animacion config/pluginBlenderALSW/data/animar.json")
-            MostarMensajeBox(
-                "No informacion de animacion config/pluginBlenderALSW/data/animar.json", title="Error", icon="ERROR")
+            self.report({"INFO"}, f"No informacion de animacion config/pluginBlenderALSW/data/animar.json")
+            MostarMensajeBox("No informacion de animacion config/pluginBlenderALSW/data/animar.json", title="Error", icon="ERROR")
 
             return {"FINISHED"}
 
         for secuencia in context.selected_sequences:
             self.report({"INFO"}, f"Animando {secuencia.name} ")
 
-            frameAnterior = 0
+            frameAnterior = secuencia.frame_final_start
 
             for keyFrame in dataAnimación:
                 frame = None
@@ -42,10 +41,10 @@ class superanimar(bpy.types.Operator):
                 propiedad = keyFrame.get("propiedad")
                 valor = keyFrame.get("valor")
 
-                tiempo = keyFrame.get("tiempo")
                 inicio = keyFrame.get("inicio")
                 final = keyFrame.get("final")
-                print(keyFrame)
+                cursor = keyFrame.get("cursor")
+                mover = keyFrame.get("mover")
 
                 if propiedad is None:
                     continue
@@ -54,27 +53,26 @@ class superanimar(bpy.types.Operator):
                     self.report({"INFO"}, f"Propiedad[{propiedad}] {valor}")
                     asignarDinámica(secuencia, propiedad, valor)
 
-                # inicio - final
-                # ninguna
-                # cursor +-
-                # avance o mover + -
                 if inicio is not None:
-                    frame = secuencia.frame_final_start + \
-                        int(inicio * framerate)
+                    frame = secuencia.frame_final_start + int(inicio * framerate)
 
                 if final is not None:
-                    frame = secuencia.frame_final_end + \
-                        int(final * framerate)
+                    frame = secuencia.frame_final_end + int(final * framerate)
+
+                if cursor is not None:
+                    frame = frameCursor + int(cursor * framerate)
+
+                if mover is not None:
+                    frame = frameAnterior + int(mover * framerate)
 
                 objetoAnimar = obtenerObjetoAtributo(secuencia, propiedad)
                 propiedadAnimar = propiedad.split('.')[-1]
+
                 if frame is None:
                     objetoAnimar.keyframe_insert(data_path=propiedadAnimar)
                 else:
-                    objetoAnimar.keyframe_insert(
-                        data_path=propiedadAnimar, frame=frame)
+                    objetoAnimar.keyframe_insert(data_path=propiedadAnimar, frame=frame)
 
-
-                print(keyFrame)
+                frameAnterior = frame
 
         return {"FINISHED"}

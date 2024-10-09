@@ -38,20 +38,10 @@ class superanimar(bpy.types.Operator):
             for keyFrame in dataAnimación:
                 frame = None
 
-                propiedad = keyFrame.get("propiedad")
-                valor = keyFrame.get("valor")
-
                 inicio = keyFrame.get("inicio")
                 final = keyFrame.get("final")
                 cursor = keyFrame.get("cursor")
                 mover = keyFrame.get("mover")
-
-                if propiedad is None:
-                    continue
-
-                if valor is not None:
-                    self.report({"INFO"}, f"Propiedad[{propiedad}] {valor}")
-                    asignarDinámica(secuencia, propiedad, valor)
 
                 if inicio is not None:
                     frame = secuencia.frame_final_start + int(inicio * framerate)
@@ -65,13 +55,26 @@ class superanimar(bpy.types.Operator):
                 if mover is not None:
                     frame = frameAnterior + int(mover * framerate)
 
-                objetoAnimar = obtenerObjetoAtributo(secuencia, propiedad)
-                propiedadAnimar = propiedad.split('.')[-1]
+                for propiedades in keyFrame:
+                    if propiedades not in ["inicio", "final", "cursor", "mover"]:
+                        propiedad = propiedades
+                        valor = keyFrame.get(propiedades)
+                        self.report({"INFO"}, f"[{propiedad}]-{valor}")
 
-                if frame is None:
-                    objetoAnimar.keyframe_insert(data_path=propiedadAnimar)
-                else:
-                    objetoAnimar.keyframe_insert(data_path=propiedadAnimar, frame=frame)
+                    if propiedad is None:
+                        continue
+
+                    if valor is not None:
+                        self.report({"INFO"}, f"Propiedad[{propiedad}] {valor}")
+                        asignarDinámica(secuencia, propiedad, valor)
+
+                    objetoAnimar = obtenerObjetoAtributo(secuencia, propiedad)
+                    propiedadAnimar = propiedad.split('.')[-1]
+
+                    if frame is None:
+                        objetoAnimar.keyframe_insert(data_path=propiedadAnimar)
+                    else:
+                        objetoAnimar.keyframe_insert(data_path=propiedadAnimar, frame=frame)
 
                 frameAnterior = frame
 

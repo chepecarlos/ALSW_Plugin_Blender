@@ -44,21 +44,28 @@ class superanimar(bpy.types.Operator):
                 mover = keyFrame.get("mover")
 
                 if inicio is not None:
-                    frame = secuencia.frame_final_start + int(inicio * framerate)
-
-                if final is not None:
-                    frame = secuencia.frame_final_end + int(final * framerate)
-
-                if cursor is not None:
+                    if isinstance(inicio, str):
+                        inicio = float(inicio.replace('%', ''))/100
+                        inicio = int(inicio * (secuencia.frame_final_end - secuencia.frame_final_start))
+                        frame = secuencia.frame_final_start + inicio
+                    else:
+                        frame = secuencia.frame_final_start + int(inicio * framerate)
+                elif final is not None:
+                    if isinstance(final, str):
+                        final = float(final.replace('%', ''))/100
+                        final = int(final* (secuencia.frame_final_end - secuencia.frame_final_start))
+                        frame = secuencia.frame_final_end + final
+                    else:
+                        frame = secuencia.frame_final_end + int(final * framerate)
+                elif cursor is not None:
                     frame = frameCursor + int(cursor * framerate)
-
-                if mover is not None:
+                elif mover is not None:
                     frame = frameAnterior + int(mover * framerate)
 
                 for propiedades in keyFrame:
                     if propiedades in ["inicio", "final", "cursor", "mover"]:
                         continue
-                    
+
                     propiedad = propiedades
                     valor = keyFrame.get(propiedades)
 
@@ -74,10 +81,10 @@ class superanimar(bpy.types.Operator):
 
                     if frame is None:
                         objetoAnimar.keyframe_insert(data_path=propiedadAnimar)
-                        self.report({"INFO"}, f"Animando[{propiedadAnimar}]")    
+                        self.report({"INFO"}, f"Animando[{propiedadAnimar}]")
                     else:
                         objetoAnimar.keyframe_insert(data_path=propiedadAnimar, frame=frame)
-                        self.report({"INFO"}, f"Animando[{propiedadAnimar}] {frame}")  
+                        self.report({"INFO"}, f"Animando[{propiedadAnimar}] {frame}")
 
                 frameAnterior = frame
 

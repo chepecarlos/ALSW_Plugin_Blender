@@ -56,16 +56,17 @@ class superanimar(bpy.types.Operator):
                     frame = frameAnterior + int(mover * framerate)
 
                 for propiedades in keyFrame:
-                    if propiedades not in ["inicio", "final", "cursor", "mover"]:
-                        propiedad = propiedades
-                        valor = keyFrame.get(propiedades)
-                        self.report({"INFO"}, f"[{propiedad}]-{valor}")
+                    if propiedades in ["inicio", "final", "cursor", "mover"]:
+                        continue
+                    
+                    propiedad = propiedades
+                    valor = keyFrame.get(propiedades)
 
                     if propiedad is None:
                         continue
 
                     if valor is not None:
-                        self.report({"INFO"}, f"Propiedad[{propiedad}] {valor}")
+                        self.report({"INFO"}, f"Asignar[{propiedad}] {valor}")
                         asignarDinámica(secuencia, propiedad, valor)
 
                     objetoAnimar = obtenerObjetoAtributo(secuencia, propiedad)
@@ -73,8 +74,10 @@ class superanimar(bpy.types.Operator):
 
                     if frame is None:
                         objetoAnimar.keyframe_insert(data_path=propiedadAnimar)
+                        self.report({"INFO"}, f"Animando[{propiedadAnimar}]")    
                     else:
                         objetoAnimar.keyframe_insert(data_path=propiedadAnimar, frame=frame)
+                        self.report({"INFO"}, f"Animando[{propiedadAnimar}] {frame}")  
 
                 frameAnterior = frame
 

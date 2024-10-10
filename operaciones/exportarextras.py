@@ -4,7 +4,7 @@ from operator import attrgetter
 import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty
 
-from .extras import MostarMensajeBox
+from .extras import mostrarMensajeBox
 from .FuncionesArchivos import ObtenerValor, SalvarValor
 
 
@@ -93,7 +93,7 @@ class exportarextra(bpy.types.Operator):
 
         if not markers_as_timecodes:
             self.report({"INFO"}, f"No hay {Prefijo} en video")
-            MostarMensajeBox(f"No hay {Prefijo} en video", title="Error", icon="ERROR")
+            mostrarMensajeBox(f"No hay {Prefijo} en video", title="Error", icon="ERROR")
             return {"CANCELLED"}
 
         bpy.context.window_manager.clipboard = "\n".join(markers_as_timecodes)

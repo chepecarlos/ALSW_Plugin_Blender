@@ -2,7 +2,7 @@ import bpy
 import math
 
 from .FuncionesArchivos import ObtenerValor, SalvarValor
-from .extras import MostarMensajeBox
+from .extras import mostrarMensajeBox
 
 from bpy.props import (
     BoolProperty,
@@ -97,6 +97,6 @@ class superzoon(bpy.types.Operator):
             ClipActual.transform.scale_x = MultiplicadorUnitario * zoon
             ClipActual.transform.scale_y = MultiplicadorUnitario * zoon
         else:
-            MostarMensajeBox("Selecione una pista", title="Error", icon="ERROR")
+            mostrarMensajeBox("Selecione una pista", title="Error", icon="ERROR")
 
         return{'FINISHED'}

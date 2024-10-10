@@ -1,7 +1,7 @@
 import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty
 
-from .extras import MostarMensajeBox
+from .extras import mostrarMensajeBox
 from .FuncionesArchivos import ObtenerValor, SalvarValor
 
 

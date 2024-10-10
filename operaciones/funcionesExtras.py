@@ -1,7 +1,6 @@
 
 
-
-def asignarDinámica(objeto, atributo, valor):
+def asignarDinámica(objeto, atributo, valor) -> bool:
     """Asigna de forma dinámica al valor
 
         en equivalente a 
@@ -14,26 +13,30 @@ def asignarDinámica(objeto, atributo, valor):
             objeto = getattr(objeto, atributoTemporal)
         else:
             print(f"El atributo '{atributoTemporal}' no existe.")
-            return 
+            return False
 
     last_attr = atributos[-1]
     if hasattr(objeto, last_attr):
         setattr(objeto, last_attr, valor)
+        return True
     else:
         print(f"El atributo '{last_attr}' no existe en '{objeto}'.")
-        
+        return False
+
+
 def obtenerObjetoAtributo(objeto, atributo):
     atributos = atributo.split('.')
-    
+
     for atributoTemporal in atributos[:-1]:
         if hasattr(objeto, atributoTemporal):
             objeto = getattr(objeto, atributoTemporal)
         else:
             print(f"El atributo '{atributoTemporal}' no existe.")
             return
-    
-    return objeto    
-        
+
+    return objeto
+
+
 def trasformarFrame(tiempo, frame):
 
     h, m, s = tiempo.split(":")

@@ -9,7 +9,7 @@ from bpy.props import (
 )
 
 from .FuncionesArchivos import ObtenerValor, SalvarValor
-from .extras import MostarMensajeBox
+from .extras import mostrarMensajeBox
 
 
 class sobreponeraudio(bpy.types.Operator):
@@ -39,12 +39,12 @@ class sobreponeraudio(bpy.types.Operator):
         # context.area.type = 'SEQUENCE_EDITOR'
         # FrameActual = bpy.context.scene.frame_current
         if VideoActual is None:
-            MostarMensajeBox("Pista No asignada en: data/blender.json",
+            mostrarMensajeBox("Pista No asignada en: data/blender.json",
                              title="Error", icon="ERROR")
             return{'FINISHED'}
 
         if not os.path.isfile(VideoActual):
-            MostarMensajeBox(f"Archivo no Existe {VideoActual}", title="Error", icon="ERROR")
+            mostrarMensajeBox(f"Archivo no Existe {VideoActual}", title="Error", icon="ERROR")
             self.report({"INFO"}, f"Archivo no Existe {VideoActual}")
             return {"FINISHED"}
 
@@ -73,7 +73,7 @@ class sobreponeraudio(bpy.types.Operator):
 
             # bpy.context.selected_sequences[0].use_proxy = True
         else:
-            MostarMensajeBox("Selecione una pista",
+            mostrarMensajeBox("Selecione una pista",
                              title="Error", icon="ERROR")
         SalvarValor("data/blender.json", "clip", None)
         return{'FINISHED'}

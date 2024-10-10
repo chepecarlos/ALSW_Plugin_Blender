@@ -1,7 +1,7 @@
 import bpy
 
 from .FuncionesArchivos import ObtenerArchivo
-from .extras import MostarMensajeBox
+from .extras import mostrarMensajeBox
 from .funcionesExtras import asignarDinámica, obtenerObjetoAtributo, trasformarFrame
 
 
@@ -25,8 +25,8 @@ class superanimar(bpy.types.Operator):
         dataAnimación = ObtenerArchivo("data/animar.json")
 
         if dataAnimación is None:
-            self.report({"INFO"}, f"No informacion de animacion config/pluginBlenderALSW/data/animar.json")
-            MostarMensajeBox("No informacion de animacion config/pluginBlenderALSW/data/animar.json", title="Error", icon="ERROR")
+            self.report({"INFO"}, f"No informacion de animacion .config/pluginBlenderALSW/data/animar.json")
+            mostrarMensajeBox("No informacion de animacion .config/pluginBlenderALSW/data/animar.json", title="Error", icon="ERROR")
 
             return {"FINISHED"}
 

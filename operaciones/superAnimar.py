@@ -76,8 +76,11 @@ class superanimar(bpy.types.Operator):
                     if valor is not None:
                         if "rotation" in propiedad:
                             valor = valor * (pi / 180)
-                        self.report({"INFO"}, f"Asignar[{propiedad}] {valor}")
-                        asignarDinámica(secuencia, propiedad, valor)
+                        if asignarDinámica(secuencia, propiedad, valor):
+                            self.report({"INFO"}, f"Asignar[{propiedad}] {valor}")
+                        else:
+                            self.report({"INFO"}, f"Error[{propiedad}] {valor}")
+    
 
                     objetoAnimar = obtenerObjetoAtributo(secuencia, propiedad)
                     propiedadAnimar = propiedad.split('.')[-1]

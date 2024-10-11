@@ -1,4 +1,5 @@
 import bpy
+from math import pi
 
 from .FuncionesArchivos import ObtenerArchivo
 from .extras import mostrarMensajeBox
@@ -73,6 +74,8 @@ class superanimar(bpy.types.Operator):
                         continue
 
                     if valor is not None:
+                        if "rotation" in propiedad:
+                            valor = valor * (pi / 180)
                         self.report({"INFO"}, f"Asignar[{propiedad}] {valor}")
                         asignarDinámica(secuencia, propiedad, valor)
 

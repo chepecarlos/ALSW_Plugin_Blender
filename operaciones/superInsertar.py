@@ -53,7 +53,7 @@ class superInsertar(bpy.types.Operator):
             tipo = archivo.split(".")[-1].lower()
 
             if tipo in ["jpg", "jpeg", "bmp", "png", "gif", "tga", "tiff"]:
-                self.report({"INFO"}, f"Insertando Imagen {tipo}")
+                self.report({"INFO"}, f"Insertando Imagen {tipo} - {frameActual + desface}")
                 archivoImagen = archivo.split("/")[-1]
                 folderImagen = archivo.split("/")
                 folderImagen = folderImagen[:-1]
@@ -66,14 +66,14 @@ class superInsertar(bpy.types.Operator):
                     channel=canal,
                 )
             elif tipo in ["acc", "ac3", "flac", "mp2", "mp3", "m4a", "pcm", "ogg"]:
-                self.report({"INFO"}, f"Insertando Audio {tipo}")
+                self.report({"INFO"}, f"Insertando Audio {tipo} - {frameActual + desface}")
                 bpy.ops.sequencer.sound_strip_add(
                     filepath=archivo,
                     frame_start=frameActual + desface,
                     channel=canal
                 )
             elif tipo in ["avi", "mp4", "mpg", "mpeg", "mov", "mkv", "dv", "flv"]:
-                self.report({"INFO"}, f"Insertando Video {tipo}")
+                self.report({"INFO"}, f"Insertando Video {tipo} - {frameActual + desface}")
                 bpy.ops.sequencer.movie_strip_add(
                     filepath=archivo,
                     frame_start=frameActual + desface,

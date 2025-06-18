@@ -1,166 +1,226 @@
 import csv
 import os
+import json
+
 
 import bpy
+import blf
 
 from .FuncionesArchivos import ObtenerArchivo
+from .funcionesExtras import asignarDinámica
+from .extras import mostrarMensajeBox
 
 
 class subtitulo(bpy.types.Operator):
     bl_idname = "scene.subtitulo"
     bl_label = "Subtitulo"
-    bl_description = "Inserta los Subtítulos desde un archivo subtitulo.sbv"
+    bl_description = "Inserta los Subtítulos desde un archivo subtitulo/out.json"
     bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
         folder = os.path.dirname(bpy.data.filepath)
         # TODO: usar el archivo .sbs si existe
-        archivoSutitulo = os.path.join(folder, "subtitulo.sbv")
+        archivoSutitulo = os.path.join(folder, "subtitulo/out.json")
 
         return os.path.exists(archivoSutitulo)
 
     def execute(self, context):
+        # TODO: problema con números con decimales
 
         scene = context.scene
         seq = scene.sequence_editor
         secuencias = seq.sequences_all
         render = context.scene.render
-        final = context.scene.frame_end
+        frameFinal = context.scene.frame_end
+        frameInicio = context.scene.frame_start
         framerate = render.fps / render.fps_base
+        anchoPantalla = context.scene.render.resolution_x
 
-        folder = os.path.dirname(bpy.data.filepath)
+        # TODO: No url fuerte
+        urlFuente = "/home/SudoData/ChepeCarlos@alsw.net/2.Contenido/1.Biblioteca/4.Global/2.Fuentes/2.Roboto/Roboto-Black.ttf"
 
-        archivoSubtitulo = os.path.join(folder, "subtitulo.sbv")
+        fuenteCargada = False
 
-        if not os.path.exists(archivoSubtitulo):
-            self.report({"INFO"}, f"No Existe el archivo subtitulo.sbv")
-            return {"FINISHED"}
+        idFuenteSelection = 0
+        for fuente in bpy.data.fonts:
+            if fuente.filepath == urlFuente:
+                self.report({"INFO"}, f"Fuente ya cargada {fuente.name}")
+                fuenteCargada = True
+                break
+            idFuenteSelection += 1
 
-        archivoData = "data/blender_subtitulo.json"
-        dataArchivo = ObtenerArchivo(archivoData)
+        idFuente = blf.load(urlFuente)
 
-        if dataArchivo is None:
-            self.report(
-                {"INFO"}, f"No se encontró el archivo Sub .config/pluginBlenderALSW/data/blender_subtitulo.jso")
-            dataArchivo = dict()
+        if not fuenteCargada:
+            bpy.data.fonts.load(urlFuente)
+        self.report({"INFO"}, f"Fuente seleccionada: {idFuenteSelection} - {idFuente} - {urlFuente}")
 
-        x = dataArchivo.get("x", 0.5)
-        y = dataArchivo.get("y", 0.5)
-
-        x_aliniacion = dataArchivo.get("x_aliniacion", "CENTER")
-        y_aliniacion = dataArchivo.get("y_aliniacion", "TOP")
-
-        tamanno = dataArchivo.get("tamanno", 60)
-
-        t_rojo = dataArchivo.get("t_rojo", 1)
-        t_verde = dataArchivo.get("t_verde", 1)
-        t_azul = dataArchivo.get("t_azul", 1)
-        t_alfa = dataArchivo.get("t_alfa", 1)
-
-        t_color = (t_rojo, t_verde, t_azul, t_alfa)
-
-        f_rojo = dataArchivo.get("f_rojo", 0)
-        f_verde = dataArchivo.get("f_verde", 0)
-        f_azul = dataArchivo.get("f_azul", 0)
-        f_alfa = dataArchivo.get("f_alfa", 0.7)
-        f_grosor = dataArchivo.get("f_grosor", 0.03)
-
-        f_color = (f_rojo, f_verde, f_azul, f_alfa)
-
-        b_rojo = dataArchivo.get("b_rojo", 0)
-        b_verde = dataArchivo.get("b_verde", 0)
-        b_azul = dataArchivo.get("b_azul", 0)
-        b_alfa = dataArchivo.get("b_alfa", 0.7)
-        b_grosor = dataArchivo.get("b_grosor", 0.6)
-
-        b_color = (b_rojo, b_verde, b_azul, b_alfa)
-
-        canal = dataArchivo.get("canal", 10)
-
-        caja = dataArchivo.get("caja", False)
-        borde = dataArchivo.get("borde", False)
-
+        # Quitar subtítulos anteriores
         prefijo = "subtitulo."
-
         for secuencia in secuencias:
             Titulo = secuencia.name
             if Titulo.startswith(prefijo):
                 seq.sequences.remove(secuencia)
 
-        inicios = []
-        finales = []
-        mensajes = []
+        folder = os.path.dirname(bpy.data.filepath)
 
-        with open(archivoSubtitulo) as dataSubtitulo:
-            lineas = dataSubtitulo.read()
-            lineas = lineas.splitlines()
-            for linea in lineas:
-                linea = linea.strip()
-                if linea == "":
+        archivoData = "data/blender_subtitulo.json"
+        propiedadesSubtítulos = ObtenerArchivo(archivoData)
+        if propiedadesSubtítulos is None:
+            self.report({"INFO"}, f"No existe el archivo {archivoData}")
+            mostrarMensajeBox("No existe el archivo {archivoData}", title="Error", icon="ERROR")
+            return {"FINISHED"}
+
+        archivoExtra = "data/blender_subtitulo_extra.json"
+        propiedadesSubtítulosExtra = ObtenerArchivo(archivoExtra)
+        if propiedadesSubtítulosExtra is None:
+            self.report({"INFO"}, f"No existe el archivo {archivoExtra}")
+            mostrarMensajeBox("No existe el archivo {archivoData}", title="Error", icon="ERROR")
+            return {"FINISHED"}
+
+        self.report({"INFO"}, f"Propiedades subtitulo {propiedadesSubtítulos}")
+
+        archivoSubtitulo = os.path.join(folder, "subtitulo/out.json")
+        if not os.path.exists(archivoSubtitulo):
+            mostrarMensajeBox("No Existe el archivo subtitulo/out.json", title="Error", icon="ERROR")
+            self.report({"INFO"}, f"No Existe el archivo subtitulo/out.json")
+            return {"FINISHED"}
+
+        dataSubtitulo = None
+        with open(archivoSubtitulo) as f:
+            dataSubtitulo = json.load(f)
+
+        palabrasPorLinea = propiedadesSubtítulosExtra.get("palabras_linea", 1)
+
+        segmentos = dataSubtitulo.get("segments", [])
+        tamañoFuente = propiedadesSubtítulos.get("font_size", 100)
+
+        lineasPalabras = list()
+        palabrasActuales = list()
+        fraseActual = ""
+        contadorPalabras = 0
+
+        for linea in segmentos:
+            palabras = linea.get("words", [])
+
+            for palabra in palabras:
+                mensaje = palabra.get("word", "")
+
+                fraseActual = ""
+
+                for palabraActual in palabrasActuales:
+                    mensajeActual = palabraActual.get("word", "")
+                    mensajeActual = mensajeActual.strip()
+                    fraseActual += mensajeActual + " "
+
+                fraseActual += mensaje.strip()
+                fraseActual = fraseActual.strip()
+                fraseActual = fraseActual.capitalize()
+
+                anchoFraseActual = self.calcularAnchoFrase(fraseActual, idFuente, tamañoFuente)
+
+                if anchoFraseActual > anchoPantalla * 0.9:
+                    contadorPalabras = 0
+                    lineasPalabras.append(palabrasActuales)
+                    palabrasActuales = list()
+                    palabrasActuales.append(palabra)
                     continue
-                elif "," in linea:
-                    numeros = linea.split(",")
-                    # TODo erro si un numero incluye coma
-                    inicios.append(trasformarFrame(numeros[0], framerate))
-                    finales.append(trasformarFrame(numeros[1], framerate))
-                    continue
-                else:
-                    mensajes.append(linea)
 
-        for id, mensaje in enumerate(mensajes[:-1]):
-            if finales[id] > inicios[id + 1]:
-                finales[id] = inicios[id + 1] - 5
+                palabrasActuales.append(palabra)
+                contadorPalabras += 1
 
-        if finales[-1] > final:
-            finales[-1] = final
+                if contadorPalabras >= palabrasPorLinea:
+                    contadorPalabras = 0
+                    lineasPalabras.append(palabrasActuales)
+                    palabrasActuales = list()
 
-        inicios[0] = 1
+        for linea in lineasPalabras:
+            contadorPalabras = 0
+            frase = ""
 
-        self.report({"INFO"}, f"Cantidad Sub {len(inicios)} - fps:{framerate}")
+            for palabra in linea:
+                mensaje = palabra.get("word", "")
+                frase = frase + mensaje
+            frase = frase.strip()
+            frase = frase.capitalize()
 
-        for id, mensaje in enumerate(mensajes):
-            inicio = int(inicios[id])
-            final = int(finales[id])
-            mensaje = mensajes[id]
+            primeraPalabra = linea[0]
+            ultimaPalabra = linea[-1]
+            inicioFrase = primeraPalabra.get("start", 0)
+            finalFrase = ultimaPalabra.get("end", 0)
 
-            self.report(
-                {"INFO"}, f"mensaje-{id} {inicio}-{final} \"{mensaje}\"")
+            inicio = trasformarFrame(inicioFrase, framerate) + frameInicio
+            final = trasformarFrame(finalFrase, framerate) + frameInicio
+            if final > frameFinal:
+                final = frameFinal
 
-            bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=int(
-                inicio), frame_end=int(final), channel=canal)
-
+            bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=inicio, frame_end=final, channel=10)
             clipActual = context.selected_sequences[0]
-            clipActual.name = f"{prefijo}{mensaje}"
-            clipActual.text = mensaje
-            clipActual.font_size = tamanno
-
-            clipActual.align_x = x_aliniacion
-            clipActual.align_y = y_aliniacion
-            clipActual.use_bold = True
-
-            clipActual.location = (x, y)
-            clipActual.color = t_color
-            clipActual.wrap_width = 1
-
-            if caja:
-                clipActual.use_box = True
-                clipActual.box_color = f_color
-                clipActual.box_margin = f_grosor
-
-            if borde:
-                clipActual.use_outline = True
-                clipActual.box_color = b_color
-                clipActual.outline_width = b_grosor
-
+            # TODO; revisar problema con nombre con numeros
+            clipActual.name = f"{prefijo}{frase}"
+            clipActual.text = frase.capitalize()
             clipActual.color_tag = "COLOR_08"
+            clipActual.font = bpy.data.fonts[idFuenteSelection]
 
-        self.report({"INFO"}, f"Folder actual {folder}")
+            anchoFrase = self.calcularAnchoFrase(frase.capitalize(), idFuente, tamañoFuente)
+
+            for propiedad, valor in propiedadesSubtítulos.items():
+                asignarDinámica(clipActual, propiedad, valor)
+
+            fraseAnterior = ""
+            contadorInterno = 0
+            for palabra in linea:
+                inicioPalabra = palabra.get("start", 0)
+                finalPalabra = palabra.get("end", 0)
+                mensaje = palabra.get("word", "")
+                mensaje = mensaje.strip()
+
+                inicioPalabra = trasformarFrame(inicioPalabra, framerate) + frameInicio
+                finalPalabra = trasformarFrame(finalPalabra, framerate) + frameInicio
+                if final > frameFinal:
+                    final = frameFinal
+                if inicioPalabra == finalPalabra:
+                    self.report({"INFO"}, f"mensajeTMP: {mensaje} - {palabra.get('start', 0)} - {palabra.get('end', 0)} {inicioPalabra} - {finalPalabra}")
+                if contadorInterno == 0:
+                    mensaje = mensaje.capitalize()
+                    contadorInterno += 1
+
+                if inicioPalabra != finalPalabra:
+                    bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=inicioPalabra, frame_end=finalPalabra, channel=11)
+
+                    clipActual = context.selected_sequences[0]
+                    clipActual.name = f"{prefijo}{mensaje}"
+
+                    clipActual.text = mensaje
+                    clipActual.color_tag = "COLOR_08"
+                    clipActual.font = bpy.data.fonts[idFuenteSelection]
+
+                    for propiedad, valor in propiedadesSubtítulos.items():
+                        asignarDinámica(clipActual, propiedad, valor)
+
+                    anchoPalabra = self.calcularAnchoFrase(mensaje, idFuente, tamañoFuente)
+                    anchoAnterior = self.calcularAnchoFrase(fraseAnterior, idFuente, tamañoFuente)
+
+                    posiciónX = (-anchoFrase + anchoPalabra) / 2 + anchoAnterior
+                    clipActual.transform.offset_x = posiciónX
+
+                    clipActual.color = (1, 0, 0, 1)
+                    clipActual.use_shadow = False
+
+                fraseAnterior += mensaje + " "
 
         return {"FINISHED"}
+
+    def calcularAnchoFrase(self, mensaje, idFuente, tamañoFuente):
+        blf.size(idFuente, tamañoFuente)
+        anchoFrase, altoFrase = blf.dimensions(idFuente, mensaje)
+        return anchoFrase
 
 
 def trasformarFrame(tiempo, frame):
 
-    h, m, s = tiempo.split(":")
-    return int((int(h) * 3600 + int(m) * 60 + float(s)) * frame)
+    return int(float(tiempo) * frame)
+
+    # h, m, s = tiempo.split(":")
+    # return int((int(h) * 3600 + int(m) * 60 + float(s)) * frame)

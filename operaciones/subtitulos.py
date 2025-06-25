@@ -50,10 +50,10 @@ class subtitulo(bpy.types.Operator):
                 break
             idFuenteSelection += 1
 
-        idFuente = blf.load(urlFuente)
-
         if not fuenteCargada:
             bpy.data.fonts.load(urlFuente)
+
+        idFuente = blf.load(urlFuente)
         self.report({"INFO"}, f"Fuente seleccionada: {idFuenteSelection} - {idFuente} - {urlFuente}")
 
         # Quitar subtítulos anteriores
@@ -70,6 +70,13 @@ class subtitulo(bpy.types.Operator):
         if propiedadesSubtítulos is None:
             self.report({"INFO"}, f"No existe el archivo {archivoData}")
             mostrarMensajeBox("No existe el archivo {archivoData}", title="Error", icon="ERROR")
+            return {"FINISHED"}
+
+        archivoDataResaltado = "data/blender_subtitulo_resaltado.json"
+        propiedadesSubtítulosResaltado = ObtenerArchivo(archivoDataResaltado)
+        if propiedadesSubtítulosResaltado is None:
+            self.report({"INFO"}, f"No existe el archivo {archivoDataResaltado}")
+            mostrarMensajeBox("No existe el archivo {archivoDataResaltado}", title="Error", icon="ERROR")
             return {"FINISHED"}
 
         archivoExtra = "data/blender_subtitulo_extra.json"
@@ -103,6 +110,8 @@ class subtitulo(bpy.types.Operator):
 
         for linea in segmentos:
             palabras = linea.get("words", [])
+            
+            palabraAnterior = None
 
             for palabra in palabras:
                 mensaje = palabra.get("word", "")
@@ -119,8 +128,22 @@ class subtitulo(bpy.types.Operator):
                 fraseActual = fraseActual.capitalize()
 
                 anchoFraseActual = self.calcularAnchoFrase(fraseActual, idFuente, tamañoFuente)
+                
+                if palabraAnterior is not None:
+                    tiempoFinPalabraAnterior = palabraAnterior.get("end", 0)
+                    tiempoInicioPalabra = palabra.get("start", 0)
+                    if tiempoInicioPalabra - tiempoFinPalabraAnterior >= 0.4: #Pausa larga cortar
+                        self.report({"INFO"}, f"Corte: {mensaje.strip()} {tiempoInicioPalabra} - {tiempoFinPalabraAnterior}: {tiempoInicioPalabra - tiempoFinPalabraAnterior}")
+                        palabraAnterior = None
+                        contadorPalabras = 0
+                        lineasPalabras.append(palabrasActuales)
+                        palabrasActuales = list()
+                        palabrasActuales.append(palabra)
+                        continue
+                    
 
                 if anchoFraseActual > anchoPantalla * 0.9:
+                    palabraAnterior = None
                     contadorPalabras = 0
                     lineasPalabras.append(palabrasActuales)
                     palabrasActuales = list()
@@ -128,10 +151,12 @@ class subtitulo(bpy.types.Operator):
                     continue
 
                 palabrasActuales.append(palabra)
+                palabraAnterior = palabra
                 contadorPalabras += 1
 
                 if contadorPalabras >= palabrasPorLinea:
                     contadorPalabras = 0
+                    palabraAnterior = None
                     lineasPalabras.append(palabrasActuales)
                     palabrasActuales = list()
 
@@ -181,7 +206,7 @@ class subtitulo(bpy.types.Operator):
                 if final > frameFinal:
                     final = frameFinal
                 if inicioPalabra == finalPalabra:
-                    self.report({"INFO"}, f"mensajeTMP: {mensaje} - {palabra.get('start', 0)} - {palabra.get('end', 0)} {inicioPalabra} - {finalPalabra}")
+                    self.report({"INFO"}, f"Ignorar: {mensaje} - {palabra.get('start', 0)} - {palabra.get('end', 0)}")
                 if contadorInterno == 0:
                     mensaje = mensaje.capitalize()
                     contadorInterno += 1
@@ -199,15 +224,18 @@ class subtitulo(bpy.types.Operator):
                     for propiedad, valor in propiedadesSubtítulos.items():
                         asignarDinámica(clipActual, propiedad, valor)
 
+                    for propiedad, valor in propiedadesSubtítulosResaltado.items():
+                        asignarDinámica(clipActual, propiedad, valor)
+
+                    if "." in mensaje:
+                        fraseAnterior = fraseAnterior.strip()
+                    
                     anchoPalabra = self.calcularAnchoFrase(mensaje, idFuente, tamañoFuente)
                     anchoAnterior = self.calcularAnchoFrase(fraseAnterior, idFuente, tamañoFuente)
 
                     posiciónX = (-anchoFrase + anchoPalabra) / 2 + anchoAnterior
                     clipActual.transform.offset_x = posiciónX
-
-                    clipActual.color = (1, 0, 0, 1)
-                    clipActual.use_shadow = False
-
+                
                 fraseAnterior += mensaje + " "
 
         return {"FINISHED"}

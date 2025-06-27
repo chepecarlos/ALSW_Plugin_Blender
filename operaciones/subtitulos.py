@@ -37,25 +37,6 @@ class subtitulo(bpy.types.Operator):
         framerate = render.fps / render.fps_base
         anchoPantalla = context.scene.render.resolution_x
 
-        # TODO: No url fuerte
-        urlFuente = "/home/SudoData/ChepeCarlos@alsw.net/2.Contenido/1.Biblioteca/4.Global/2.Fuentes/2.Roboto/Roboto-Black.ttf"
-
-        fuenteCargada = False
-
-        idFuenteSelection = 0
-        for fuente in bpy.data.fonts:
-            if fuente.filepath == urlFuente:
-                self.report({"INFO"}, f"Fuente ya cargada {fuente.name}")
-                fuenteCargada = True
-                break
-            idFuenteSelection += 1
-
-        if not fuenteCargada:
-            bpy.data.fonts.load(urlFuente)
-
-        idFuente = blf.load(urlFuente)
-        self.report({"INFO"}, f"Fuente seleccionada: {idFuenteSelection} - {idFuente} - {urlFuente}")
-
         # Quitar subtítulos anteriores
         prefijo = "subtitulo."
         for secuencia in secuencias:
@@ -86,6 +67,26 @@ class subtitulo(bpy.types.Operator):
             mostrarMensajeBox("No existe el archivo {archivoData}", title="Error", icon="ERROR")
             return {"FINISHED"}
 
+        urlFuente = propiedadesSubtítulosExtra.get("fuente")
+        archivoFuente = os.path.basename(urlFuente)
+        fuenteCargada = False
+
+        idFuenteSelection = 0
+        for fuente in bpy.data.fonts:
+            if archivoFuente in fuente.filepath:  # TODO revisar con nombre no path
+                self.report({"INFO"}, f"Fuente ya cargada {archivoFuente} - {fuente.name}")
+
+                fuenteCargada = True
+                break
+            idFuenteSelection += 1
+
+        if not fuenteCargada:
+            bpy.data.fonts.load(urlFuente)
+            bpy.ops.file.make_paths_relative()
+
+        idFuente = blf.load(urlFuente)
+        self.report({"INFO"}, f"Fuente seleccionada: {archivoFuente}:{idFuente} URL: {urlFuente}")
+
         self.report({"INFO"}, f"Propiedades subtitulo {propiedadesSubtítulos}")
 
         archivoSubtitulo = os.path.join(folder, "subtitulo/out.json")
@@ -110,7 +111,7 @@ class subtitulo(bpy.types.Operator):
 
         for linea in segmentos:
             palabras = linea.get("words", [])
-            
+
             palabraAnterior = None
 
             for palabra in palabras:
@@ -129,10 +130,12 @@ class subtitulo(bpy.types.Operator):
 
                 anchoFraseActual = self.calcularAnchoFrase(fraseActual, idFuente, tamañoFuente)
                 
+                esperaCorte = propiedadesSubtítulosExtra.get("espera", 0.4)
+
                 if palabraAnterior is not None:
                     tiempoFinPalabraAnterior = palabraAnterior.get("end", 0)
                     tiempoInicioPalabra = palabra.get("start", 0)
-                    if tiempoInicioPalabra - tiempoFinPalabraAnterior >= 0.4: #Pausa larga cortar
+                    if tiempoInicioPalabra - tiempoFinPalabraAnterior >= esperaCorte:
                         self.report({"INFO"}, f"Corte: {mensaje.strip()} {tiempoInicioPalabra} - {tiempoFinPalabraAnterior}: {tiempoInicioPalabra - tiempoFinPalabraAnterior}")
                         palabraAnterior = None
                         contadorPalabras = 0
@@ -140,7 +143,6 @@ class subtitulo(bpy.types.Operator):
                         palabrasActuales = list()
                         palabrasActuales.append(palabra)
                         continue
-                    
 
                 if anchoFraseActual > anchoPantalla * 0.9:
                     palabraAnterior = None
@@ -227,15 +229,15 @@ class subtitulo(bpy.types.Operator):
                     for propiedad, valor in propiedadesSubtítulosResaltado.items():
                         asignarDinámica(clipActual, propiedad, valor)
 
-                    if "." in mensaje:
+                    if mensaje.startswith("."):
                         fraseAnterior = fraseAnterior.strip()
-                    
+
                     anchoPalabra = self.calcularAnchoFrase(mensaje, idFuente, tamañoFuente)
                     anchoAnterior = self.calcularAnchoFrase(fraseAnterior, idFuente, tamañoFuente)
 
                     posiciónX = (-anchoFrase + anchoPalabra) / 2 + anchoAnterior
                     clipActual.transform.offset_x = posiciónX
-                
+
                 fraseAnterior += mensaje + " "
 
         return {"FINISHED"}

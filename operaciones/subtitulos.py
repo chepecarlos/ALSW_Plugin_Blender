@@ -7,7 +7,7 @@ import bpy
 import blf
 
 from .FuncionesArchivos import ObtenerArchivo
-from .funcionesExtras import asignarDinámica
+from .funcionesExtras import asignarDinámica, cargarFuente
 from .extras import mostrarMensajeBox
 
 
@@ -69,20 +69,8 @@ class subtitulo(bpy.types.Operator):
 
         urlFuente = propiedadesSubtítulosExtra.get("fuente")
         archivoFuente = os.path.basename(urlFuente)
-        fuenteCargada = False
 
-        idFuenteSelection = 0
-        for fuente in bpy.data.fonts:
-            if archivoFuente in fuente.filepath:  # TODO revisar con nombre no path
-                self.report({"INFO"}, f"Fuente ya cargada {archivoFuente} - {fuente.name}")
-
-                fuenteCargada = True
-                break
-            idFuenteSelection += 1
-
-        if not fuenteCargada:
-            bpy.data.fonts.load(urlFuente)
-            bpy.ops.file.make_paths_relative()
+        idFuenteSelection, idFuente = cargarFuente(urlFuente)
 
         idFuente = blf.load(urlFuente)
         self.report({"INFO"}, f"Fuente seleccionada: {archivoFuente}:{idFuente} URL: {urlFuente}")
@@ -129,7 +117,7 @@ class subtitulo(bpy.types.Operator):
                 fraseActual = fraseActual.capitalize()
 
                 anchoFraseActual = self.calcularAnchoFrase(fraseActual, idFuente, tamañoFuente)
-                
+
                 esperaCorte = propiedadesSubtítulosExtra.get("espera", 0.4)
 
                 if palabraAnterior is not None:

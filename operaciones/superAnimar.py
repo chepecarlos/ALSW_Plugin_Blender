@@ -3,7 +3,7 @@ from math import pi
 
 from .FuncionesArchivos import ObtenerArchivo
 from .extras import mostrarMensajeBox
-from .funcionesExtras import asignarDinámica, obtenerObjetoAtributo, trasformarFrame
+from .funcionesExtras import asignarDinámica, cargarFuente, obtenerObjetoAtributo, trasformarFrame
 
 
 class superanimar(bpy.types.Operator):
@@ -43,18 +43,19 @@ class superanimar(bpy.types.Operator):
                 final = keyFrame.get("final")
                 cursor = keyFrame.get("cursor")
                 mover = keyFrame.get("mover")
+                fuente = keyFrame.get("fuente")
 
                 if inicio is not None:
                     if isinstance(inicio, str):
-                        inicio = float(inicio.replace('%', ''))/100
+                        inicio = float(inicio.replace("%", "")) / 100
                         inicio = int(inicio * (secuencia.frame_final_end - secuencia.frame_final_start))
                         frame = secuencia.frame_final_start + inicio
                     else:
                         frame = secuencia.frame_final_start + int(inicio * framerate)
                 elif final is not None:
                     if isinstance(final, str):
-                        final = float(final.replace('%', ''))/100
-                        final = int(final* (secuencia.frame_final_end - secuencia.frame_final_start))
+                        final = float(final.replace("%", "")) / 100
+                        final = int(final * (secuencia.frame_final_end - secuencia.frame_final_start))
                         frame = secuencia.frame_final_end + final
                     else:
                         frame = secuencia.frame_final_end + int(final * framerate)
@@ -63,8 +64,12 @@ class superanimar(bpy.types.Operator):
                 elif mover is not None:
                     frame = frameAnterior + int(mover * framerate)
 
+                if fuente is not None:
+                    idFuenteSelection, idFuente = cargarFuente(fuente)
+                    secuencia.font = bpy.data.fonts[idFuenteSelection]
+
                 for propiedades in keyFrame:
-                    if propiedades in ["inicio", "final", "cursor", "mover"]:
+                    if propiedades in ["inicio", "final", "cursor", "mover","fuente"]:
                         continue
 
                     propiedad = propiedades
@@ -80,10 +85,9 @@ class superanimar(bpy.types.Operator):
                             self.report({"INFO"}, f"Asignar[{propiedad}] {valor}")
                         else:
                             self.report({"INFO"}, f"Error[{propiedad}] {valor}")
-    
 
                     objetoAnimar = obtenerObjetoAtributo(secuencia, propiedad)
-                    propiedadAnimar = propiedad.split('.')[-1]
+                    propiedadAnimar = propiedad.split(".")[-1]
 
                     if frame is None:
                         objetoAnimar.keyframe_insert(data_path=propiedadAnimar)

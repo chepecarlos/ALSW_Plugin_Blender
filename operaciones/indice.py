@@ -3,7 +3,9 @@ from operator import attrgetter
 import bpy
 from bpy.props import BoolProperty, EnumProperty, FloatProperty, IntProperty
 
-from .FuncionesArchivos import ObtenerValor, SalvarValor
+from .FuncionesArchivos import ObtenerValor, SalvarValor, ObtenerArchivo
+from .extras import mostrarMensajeBox
+from .funcionesExtras import asignarDinámica, cargarFuente
 
 
 class superindice(bpy.types.Operator):
@@ -24,66 +26,69 @@ class superindice(bpy.types.Operator):
         scene = context.scene
         seq = scene.sequence_editor
         secuencias = seq.sequences_all
+        render = context.scene.render
+        framerate = render.fps / render.fps_base
 
         if indices is None:
             return {"CANCELLED"}
-        render = context.scene.render
-
-        framerate = render.fps / render.fps_base
-
-        self.Duracion = int(ObtenerValor("data/blender.json", "indice_duracion") * framerate)
-        # self.movimiento_vertical = fade_duracion
-        indice_tamanno = ObtenerValor("data/blender.json", "indice_tamanno")
-        indice_x = ObtenerValor("data/blender.json", "indice_x")
-        indice_y = ObtenerValor("data/blender.json", "indice_y")
-
-        fade_duracion = ObtenerValor("data/blender.json", "fade_duracion")
-        fade_mode = ObtenerValor("data/blender.json", "fade_mode")
-
-        indice_texto_rojo = ObtenerValor("data/blender.json", "indice_texto_rojo")
-        indice_texto_azul = ObtenerValor("data/blender.json", "indice_texto_azul")
-        indice_texto_verde = ObtenerValor("data/blender.json", "indice_texto_verde")
-        indice_texto_alpha = ObtenerValor("data/blender.json", "indice_texto_alpha")
-        color_texto = (indice_texto_rojo, indice_texto_verde, indice_texto_azul, indice_texto_alpha)
-
-        indice_box_rojo = ObtenerValor("data/blender.json", "indice_box_rojo")
-        indice_box_azul = ObtenerValor("data/blender.json", "indice_box_azul")
-        indice_box_verde = ObtenerValor("data/blender.json", "indice_box_verde")
-        indice_box_alpha = ObtenerValor("data/blender.json", "indice_box_alpha")
-        color_box = (indice_box_rojo, indice_box_verde, indice_box_azul, indice_box_alpha)
-
         indices = sorted(indices, key=attrgetter("frame"))
         indices = indices[1:]
-        prefiji = "indice."
+
+        dataIndice = ObtenerArchivo("data/indice.json")
+
+        if dataIndice is None:
+            self.report({"INFO"}, f"No informacion de animacion .config/pluginBlenderALSW/data/indice.json")
+            mostrarMensajeBox("No informacion de animacion .config/pluginBlenderALSW/data/indice.json", title="Error", icon="ERROR")
+
+            return {"FINISHED"}
+
+        dataIndiceExtra = ObtenerArchivo("data/indice_extra.json")
+
+        if dataIndiceExtra is None:
+            self.report({"INFO"}, f"No informacion de animacion .config/pluginBlenderALSW/data/indice_extra.json")
+            mostrarMensajeBox("No informacion de animacion .config/pluginBlenderALSW/data/indice_extra.json", title="Error", icon="ERROR")
+
+            return {"FINISHED"}
+
+        fuente = dataIndiceExtra.get("fuente", None)
+        tiempoDesaparecer = dataIndiceExtra.get("tiempo_desaparecer", 0.5)
+        animaciónDesaparecer = dataIndiceExtra.get("animacion_desaparecer", "OUT")
+
+        prefijo = "indice."
 
         for secuencia in secuencias:
             Titulo = secuencia.name
-            if Titulo.startswith(prefiji):
+            if Titulo.startswith(prefijo):
+                self.report({"INFO"}, f"borrar[{Titulo}]")
+
                 seq.sequences.remove(secuencia)
 
-        # self.Duracion = int(self.Duracion)
+        duraciónIndice = int(dataIndiceExtra.get("duracion", 5) * framerate)
+        canal = int(dataIndiceExtra.get("canal", 8))
+
         for indice in indices:
             Titulo = indice.name
             if not Titulo.startswith(">"):
                 frame = indice.frame
-                # TODO: Buscar el ultimo canal usado por los clips
-                bpy.ops.sequencer.effect_strip_add(
-                    type="TEXT", frame_start=frame, frame_end=int(frame + self.Duracion), channel=1
-                )
+                bpy.ops.sequencer.effect_strip_add(type="TEXT", frame_start=frame, frame_end=int(frame + duraciónIndice), channel=canal)
                 clipActual = context.selected_sequences[0]
-                clipActual.name = f"{prefiji}{Titulo}"
+                clipActual.name = f"{prefijo}{Titulo}"
                 clipActual.text = Titulo
-                clipActual.font_size = indice_tamanno
-                clipActual.use_box = True
-                clipActual.align_x = "LEFT"
-                clipActual.align_y = "TOP"
-                # Incompatible con verciones viejas de blender
-                # clipActual.use_bold = True
-                clipActual.location = (indice_x, indice_y)
-                clipActual.color = color_texto
-                clipActual.wrap_width = 1
-                clipActual.box_color = color_box
+
+                if fuente is not None:
+                    idFuenteSelection, idFuente = cargarFuente(fuente)
+                    clipActual.font = bpy.data.fonts[idFuenteSelection]
+
                 clipActual.color_tag = "COLOR_06"
-                bpy.ops.sequencer.fades_add(duration_seconds=fade_duracion, type=fade_mode)
+
+                for propiedad, valor in dataIndice.items():
+                    self.report({"INFO"}, f"probando[{propiedad}] {valor}")
+                    if propiedad is None:
+                        continue
+                    if valor is not None:
+                        if asignarDinámica(clipActual, propiedad, valor):
+                            self.report({"INFO"}, f"Asignar[{propiedad}] {valor}")
+
+                bpy.ops.sequencer.fades_add(duration_seconds=tiempoDesaparecer, type=animaciónDesaparecer)
 
         return {"FINISHED"}

@@ -53,13 +53,14 @@ def cargarFuente(archivoFuente: str) -> tuple:
     """
     fuenteCargada = False
     idFuenteSelection = 0
-    nombreFuente = os.path.basename(archivoFuente)
+    nombreArchivo= os.path.basename(archivoFuente)
 
     for fuente in reversed(bpy.data.fonts.items()):
         nombreFuente = fuente[0]
         objetoFuente = bpy.data.fonts[nombreFuente]
         nombreFuenteActual = os.path.basename(objetoFuente.filepath)
-        if nombreFuenteActual == nombreFuente:
+        if nombreFuenteActual == nombreArchivo:
+            print(f"Fuente encontrada: {nombreFuenteActual}")
             fuenteCargada = True
             break
         idFuenteSelection += 1

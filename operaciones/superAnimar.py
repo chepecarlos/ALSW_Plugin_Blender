@@ -14,6 +14,7 @@ class superanimar(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        # Verifica si hay secuencias seleccionadas
         return True
 
     def execute(self, context):
@@ -21,6 +22,7 @@ class superanimar(bpy.types.Operator):
         render = context.scene.render
         framerate = render.fps / render.fps_base
         frameCursor = context.scene.frame_current
+        escena = context.scene
 
         self.report({"INFO"}, f"Insertando Animación")
         dataAnimación = ObtenerArchivo("data/animar.json")
@@ -44,6 +46,20 @@ class superanimar(bpy.types.Operator):
                 cursor = keyFrame.get("cursor")
                 mover = keyFrame.get("mover")
                 fuente = keyFrame.get("fuente")
+                borrar = keyFrame.get("borrar", False)
+
+                if borrar:
+                    nombreSecuencia = secuencia.name
+                    action = escena.animation_data.action if escena.animation_data else None
+                    if action:
+
+                        for fcurve in list(action.fcurves):
+
+                            if f'sequence_editor.strips_all["{nombreSecuencia}"]' in fcurve.data_path:
+                                fcurve.keyframe_points.clear()
+                                action.fcurves.remove(fcurve)
+
+                    return {"FINISHED"}  # Si se indica borrar, no se anima nada y se sale de la función
 
                 if inicio is not None:
                     if isinstance(inicio, str):
@@ -69,7 +85,7 @@ class superanimar(bpy.types.Operator):
                     secuencia.font = bpy.data.fonts[idFuenteSelection]
 
                 for propiedades in keyFrame:
-                    if propiedades in ["inicio", "final", "cursor", "mover","fuente"]:
+                    if propiedades in ["inicio", "final", "cursor", "mover", "fuente"]:
                         continue
 
                     propiedad = propiedades

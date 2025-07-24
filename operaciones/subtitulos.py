@@ -16,14 +16,17 @@ class subtitulo(bpy.types.Operator):
     bl_label = "Subtitulo"
     bl_description = "Inserta los Subtítulos desde un archivo subtitulo/out.json"
     bl_options = {"REGISTER", "UNDO"}
+    # TODO: quitar puntos si se incluyen en texto
 
     @classmethod
     def poll(cls, context):
+        
         folder = os.path.dirname(bpy.data.filepath)
-        # TODO: usar el archivo .sbs si existe
-        archivoSutitulo = os.path.join(folder, "subtitulo/out.json")
+        nombreArchivo = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        folderSubtitulos = f"{folder}/subtitulo_{nombreArchivo}"
+        archivoSubtitulo = f"{folderSubtitulos}/out.json"
 
-        return os.path.exists(archivoSutitulo)
+        return os.path.exists(archivoSubtitulo)
 
     def execute(self, context):
         # TODO: problema con números con decimales
@@ -43,8 +46,7 @@ class subtitulo(bpy.types.Operator):
             Titulo = secuencia.name
             if Titulo.startswith(prefijo):
                 seq.sequences.remove(secuencia)
-
-        folder = os.path.dirname(bpy.data.filepath)
+        
 
         archivoData = "data/blender_subtitulo.json"
         propiedadesSubtítulos = ObtenerArchivo(archivoData)
@@ -77,15 +79,20 @@ class subtitulo(bpy.types.Operator):
 
         self.report({"INFO"}, f"Propiedades subtitulo {propiedadesSubtítulos}")
 
-        archivoSubtitulo = os.path.join(folder, "subtitulo/out.json")
+        folder = os.path.dirname(bpy.data.filepath)
+        nombreArchivo = os.path.splitext(os.path.basename(bpy.data.filepath))[0]
+        folderSubtitulos = f"{folder}/subtitulo_{nombreArchivo}"
+        archivoSubtitulo = f"{folderSubtitulos}/out.json"
+        
         if not os.path.exists(archivoSubtitulo):
-            mostrarMensajeBox("No Existe el archivo subtitulo/out.json", title="Error", icon="ERROR")
-            self.report({"INFO"}, f"No Existe el archivo subtitulo/out.json")
+            mostrarMensajeBox(f"No Existe el archivo {archivoSubtitulo}", title="Error", icon="ERROR")
+            self.report({"INFO"}, f"No Existe el archivo {archivoSubtitulo}")
             return {"FINISHED"}
 
         dataSubtitulo = None
         with open(archivoSubtitulo) as f:
             dataSubtitulo = json.load(f)
+
 
         palabrasPorLinea = propiedadesSubtítulosExtra.get("palabras_linea", 1)
 

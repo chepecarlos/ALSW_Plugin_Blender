@@ -22,7 +22,7 @@ bl_info = {
     "author": "ChepeCarlos",
     "description": "Herramientas Extra para Sequencer",
     "blender": (2, 92, 0),
-    "version": (0, 1, 0),
+    "version": (0, 1, 1),
     "license": "GPL",
     "location": "Sequencer",
     "warning": "",

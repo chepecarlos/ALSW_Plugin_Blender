@@ -16,6 +16,7 @@ from .operaciones.superInsertar import superInsertar
 from .operaciones.zoon import superzoon
 from .operaciones.autoanotar import autoanotar
 from .operaciones.superAnimar import superanimar
+from .operaciones.palabraPorMinuto import palabraPorMinuto
  
 bl_info = {
     "name": "ALSW_Plugin_Blender",
@@ -42,6 +43,7 @@ classes = [
     subtitulo,
     autoanotar,
     superanimar,
+    palabraPorMinuto,
     mipanel.mi_PT_panel,
 ]
 

@@ -12,6 +12,10 @@ class mi_PT_panel(bpy.types.Panel):
     def draw(self, context):
         """Dibujar el panel."""
         layout = self.layout
+        
+        row = layout.row()
+        row.label(text="Palabra por Minuto")
+        ops = row.operator("scene.ppm", text="Calcular")
 
         row = layout.row()
         row.label(text="AutoAnotacion")

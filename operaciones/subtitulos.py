@@ -142,10 +142,10 @@ class subtitulo(bpy.types.Operator):
         fraseActual = ""
         contadorPalabras = 0
 
+        palabraAnterior = None
+
         for linea in segmentos:
             palabras = linea.get("words", [])
-
-            palabraAnterior = None
 
             for palabra in palabras:
                 mensaje = palabra.get("word", "")
@@ -170,19 +170,19 @@ class subtitulo(bpy.types.Operator):
                     tiempoInicioPalabra = palabra.get("start", 0)
                     if tiempoInicioPalabra - tiempoFinPalabraAnterior >= esperaCorte:
                         self.report({"INFO"}, f"Corte: {mensaje.strip()} {tiempoInicioPalabra} - {tiempoFinPalabraAnterior}: {tiempoInicioPalabra - tiempoFinPalabraAnterior}")
-                        palabraAnterior = None
-                        contadorPalabras = 0
                         lineasPalabras.append(palabrasActuales)
                         palabrasActuales = list()
                         palabrasActuales.append(palabra)
+                        palabraAnterior = palabra
+                        contadorPalabras = 1
                         continue
 
                 if anchoFraseActual > anchoPantalla * 0.9:
-                    palabraAnterior = None
-                    contadorPalabras = 0
                     lineasPalabras.append(palabrasActuales)
                     palabrasActuales = list()
                     palabrasActuales.append(palabra)
+                    palabraAnterior = palabra
+                    contadorPalabras = 1
                     continue
 
                 palabrasActuales.append(palabra)
@@ -191,7 +191,6 @@ class subtitulo(bpy.types.Operator):
 
                 if contadorPalabras >= palabrasPorLinea:
                     contadorPalabras = 0
-                    palabraAnterior = None
                     lineasPalabras.append(palabrasActuales)
                     palabrasActuales = list()
 

@@ -195,6 +195,9 @@ class subtitulo(bpy.types.Operator):
                     lineasPalabras.append(palabrasActuales)
                     palabrasActuales = list()
 
+        if palabrasActuales:
+            lineasPalabras.append(palabrasActuales)
+
         for linea in lineasPalabras:
             contadorPalabras = 0
             frase = ""

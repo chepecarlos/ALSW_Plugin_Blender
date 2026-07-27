@@ -5,21 +5,26 @@ DIST_DIR ?= dist
 BLENDER_CONFIG_BASE := $(HOME)/.var/app/org.blender.Blender/config/blender
 BLENDER_CONFIG_VERSION ?= $(shell ls -d $(BLENDER_CONFIG_BASE)/[0-9]*.[0-9]* 2>/dev/null | sort -V | tail -1 | xargs basename 2>/dev/null)
 ADDONS_DIR ?= $(BLENDER_CONFIG_BASE)/$(BLENDER_CONFIG_VERSION)/scripts/addons
-ZIP_NAME ?= $(ADDON_MODULE)-$(shell date +%Y%m%d-%H%M%S).zip
+ADDON_VERSION ?= $(shell python3 -c "import ast,pathlib; t=ast.parse(pathlib.Path('$(PLUGIN_DIR)/__init__.py').read_text()); [print('.'.join(map(str,ast.literal_eval(n.value)['version']))) for n in ast.walk(t) if isinstance(n,ast.Assign) and any(getattr(x,'id','')=='bl_info' for x in n.targets)]" 2>/dev/null)
+ZIP_NAME ?= $(ADDON_MODULE)-v$(ADDON_VERSION).zip
 
 LOAD_PLUGIN := import sys, importlib.util; spec = importlib.util.spec_from_file_location('$(ADDON_MODULE)', '$(PLUGIN_DIR)/__init__.py', submodule_search_locations=['$(PLUGIN_DIR)']); addon = importlib.util.module_from_spec(spec); sys.modules['$(ADDON_MODULE)'] = addon; spec.loader.exec_module(addon)
 
-.PHONY: blenderaddon blenderaddon-dev blenderaddon-bg blenderaddon-check blenderaddon-reload zip zlip install-local info
+.PHONY: blenderaddon blenderaddon-dev blenderaddon-dev-install blenderaddon-bg blenderaddon-check blenderaddon-reload zip zlip install-local info
 
 info:
 	@echo "Blender:  $(BLENDER)"
 	@echo "Version:  $(BLENDER_CONFIG_VERSION)"
 	@echo "Addons:   $(ADDONS_DIR)"
+	@echo "Addon v:  $(ADDON_VERSION)"
 
 blenderaddon:
 	$(BLENDER) --factory-startup --python-expr "$(LOAD_PLUGIN); addon.register()"
 
 blenderaddon-dev:
+	$(BLENDER) --python-expr "$(LOAD_PLUGIN); addon.register(); print('ADDON_DEV_LOADED')"
+
+blenderaddon-dev-install: install-local
 	$(BLENDER) --python-expr "$(LOAD_PLUGIN); addon.register(); print('ADDON_DEV_LOADED')"
 
 blenderaddon-bg:

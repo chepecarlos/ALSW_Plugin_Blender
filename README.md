@@ -5,6 +5,7 @@ Un plugin completo para Blender 5.x que acelera el flujo de trabajo en el Sequen
 ## 📋 Tabla de Contenidos
 
 - [Instalación](#instalación)
+- [Comandos de Desarrollo (Makefile)](#comandos-de-desarrollo-makefile)
 - [Funciones Principales](#funciones-principales)
 - [Cómo Usar](#cómo-usar)
 - [Configuración](#configuración)
@@ -24,6 +25,105 @@ Un plugin completo para Blender 5.x que acelera el flujo de trabajo en el Sequen
 3. **Verificar instalación:**
    - Abre el Sequence Editor
    - En el panel lateral derecho (presiona `N`), verás una pestaña llamada "ChepeCarlos"
+
+## 🛠️ Comandos de Desarrollo (Makefile)
+
+El `Makefile` incluye recetas para desarrollar, probar e instalar el addon sin necesidad de abrir la UI de Blender manualmente. Usa **Flatpak** por defecto (`flatpak run org.blender.Blender`).
+
+### Variables principales
+
+| Variable | Valor por defecto | Descripción |
+|---|---|---|
+| `BLENDER` | `flatpak run org.blender.Blender` | Comando para lanzar Blender |
+| `PROJECT_ROOT` | `/home/chepecarlos/5.Programas/1.Edicion` | Carpeta padre del addon para que Python lo encuentre |
+| `ADDON_MODULE` | `ChepeCarlos_Plugin_Blender` | Nombre del módulo Python del addon |
+| `DIST_DIR` | `dist` | Carpeta donde se guardan los ZIPs generados |
+| `BLENDER_CONFIG_VERSION` | `5.1` | Versión de Blender para construir la ruta de addons |
+| `ADDONS_DIR` | `~/.var/app/org.blender.Blender/config/blender/5.1/scripts/addons` | Carpeta donde Blender busca addons instalados (Flatpak) |
+
+Puedes sobreescribir cualquier variable al vuelo sin editar el archivo:
+
+```bash
+make install-local BLENDER=/ruta/a/otro/blender
+```
+
+### Recetas disponibles
+
+#### `make blenderaddon-bg` ⭐ (más usada en desarrollo)
+
+```bash
+make blenderaddon-bg
+```
+
+Lanza Blender en **modo background** (sin abrir ventana), importa el addon, lo registra e imprime `REGISTER_OK`, luego lo desregistra e imprime `UNREGISTER_OK`. Es la forma más rápida de verificar que el addon no tiene errores de sintaxis o registro.
+
+---
+
+#### `make blenderaddon-check`
+
+```bash
+make blenderaddon-check
+```
+
+Lanza Blender en background e imprime la versión instalada (`bpy.app.version_string`). Útil para confirmar qué versión está usando el Flatpak.
+
+---
+
+#### `make blenderaddon-dev`
+
+```bash
+make blenderaddon-dev
+```
+
+Lanza Blender **con tu configuración personal** (sin `--factory-startup`) y hace un `importlib.reload` del addon antes de registrarlo. Úsalo durante el desarrollo para probar cambios con tu entorno habitual.
+
+---
+
+#### `make blenderaddon`
+
+```bash
+make blenderaddon
+```
+
+Lanza Blender con `--factory-startup` (ignora tu configuración personal) e importa y registra el addon. Prueba rápida de carga, pero abre la UI completa.
+
+---
+
+#### `make blenderaddon-reload`
+
+```bash
+make blenderaddon-reload
+```
+
+Ciclo completo de prueba: registra el addon, limpia todos sus módulos de `sys.modules`, reimporta, hace `reload`, desregistra y vuelve a registrar. Verifica que el addon sobrevive un reload sin dejar estado sucio.
+
+---
+
+#### `make install-local`
+
+```bash
+make install-local
+```
+
+Copia el addon directamente a `ADDONS_DIR` usando `rsync` (excluye `.git`, `__pycache__`, `.vscode` y `dist/`). Después de esto puedes activar el addon desde Preferencias de Blender sin instalar un ZIP manualmente.
+
+---
+
+#### `make zip`
+
+```bash
+make zip
+```
+
+Empaca el addon como un ZIP instalable en `dist/`. El nombre incluye un timestamp (`ChepeCarlos_Plugin_Blender-YYYYMMDD-HHMMSS.zip`), listo para instalar desde la UI de Blender.
+
+---
+
+#### `make zlip`
+
+Alias de `make zip`. Existe para no perder tiempo si uno escribe mal el comando.
+
+---
 
 ## 🎬 Funciones Principales
 

@@ -13,7 +13,15 @@ class mi_PT_panel(bpy.types.Panel):
     def draw(self, context):
         """Dibujar el panel."""
         layout = self.layout
-        
+
+        row = layout.row()
+        row.label(text="Pre-editar")
+        row.operator("scene.preeditar", text="Empezar")
+
+        row = layout.row()
+        row.label(text="Subtítulos")
+        ops = row.operator("scene.subtitulo", text="Agregar")
+
         row = layout.row()
         row.label(text="Palabra por Minuto")
         ops = row.operator("scene.ppm", text="Calcular")
@@ -25,10 +33,6 @@ class mi_PT_panel(bpy.types.Panel):
         row = layout.row()
         row.label(text="Poder")
         ops = row.operator("scene.hueva", text="Hueva")
-
-        row = layout.row()
-        row.label(text="Subtítulos")
-        ops = row.operator("scene.subtitulo", text="Agregar")
 
         row = layout.row()
         row.label(text="Indice NocheProgramacion")
@@ -105,7 +109,6 @@ class mi_PT_panel(bpy.types.Panel):
         row.label(text="Generador Indice")
         row = layout.row()
         ops = row.operator("scene.superindice", text="Generar")
-
 
         row = layout.row()
         row.label(text="Exportar Markas Extras")

@@ -15,13 +15,14 @@ from .operaciones.zoon import superzoon
 from .operaciones.autoanotar import autoanotar
 from .operaciones.superAnimar import superanimar
 from .operaciones.palabraPorMinuto import palabraPorMinuto
- 
+from .operaciones.preEditar import preEditar
+
 bl_info = {
     "name": "ChepeCarlos_Plugin_Blender",
     "author": "ChepeCarlos",
     "description": "Herramientas Extra para Sequencer",
     "blender": (5, 1, 0),
-    "version": (0, 2, 0),
+    "version": (0, 2, 1),
     "license": "GPL",
     "location": "Sequencer",
     "warning": "",
@@ -43,6 +44,7 @@ classes = [
     autoanotar,
     superanimar,
     palabraPorMinuto,
+    preEditar,
     mipanel.mi_PT_panel,
 ]
 

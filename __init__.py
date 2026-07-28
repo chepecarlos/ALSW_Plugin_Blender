@@ -51,6 +51,21 @@ classes = [
 
 def register():
     for cls in classes:
+        # ponytail: register_class falla si ya hay una clase con el mismo
+        # nombre registrada (p.ej. addon instalado + `make blenderaddon-dev`
+        # a la vez). Por el cacheo de submódulos en sys.modules, `cls` puede
+        # ser el MISMO objeto ya registrado, o uno distinto con igual nombre;
+        # se desregistran ambos casos (ignorando si no estaban registrados).
+        try:
+            bpy.utils.unregister_class(cls)
+        except RuntimeError:
+            pass
+        for sub in cls.__bases__[0].__subclasses__():
+            if sub is not cls and sub.__name__ == cls.__name__:
+                try:
+                    bpy.utils.unregister_class(sub)
+                except RuntimeError:
+                    pass
         bpy.utils.register_class(cls)
     add_hotkey()
 

@@ -21,11 +21,17 @@ info:
 blenderaddon:
 	$(BLENDER) --factory-startup --python-expr "$(LOAD_PLUGIN); addon.register()"
 
+# Sin --factory-startup, Blender vuelve a habilitar el addon instalado desde
+# las preferencias del usuario DESPUÉS de --python-expr, chocando con la copia
+# dev ya registrada. Se lo quita de la lista de addons habilitados en memoria
+# (no se guarda a disco) para que ese auto-enable posterior no se dispare.
+DISABLE_INSTALLED := import addon_utils; addon_utils.disable('$(ADDON_MODULE)', default_set=True)
+
 blenderaddon-dev:
-	$(BLENDER) --python-expr "$(LOAD_PLUGIN); addon.register(); print('ADDON_DEV_LOADED')"
+	$(BLENDER) --python-expr "$(DISABLE_INSTALLED); $(LOAD_PLUGIN); addon.register(); print('ADDON_DEV_LOADED')"
 
 blenderaddon-dev-install: install-local
-	$(BLENDER) --python-expr "$(LOAD_PLUGIN); addon.register(); print('ADDON_DEV_LOADED')"
+	$(BLENDER) --python-expr "$(DISABLE_INSTALLED); $(LOAD_PLUGIN); addon.register(); print('ADDON_DEV_LOADED')"
 
 blenderaddon-bg:
 	$(BLENDER) --background --factory-startup --python-expr "$(LOAD_PLUGIN); addon.register(); print('REGISTER_OK'); addon.unregister(); print('UNREGISTER_OK')"
